@@ -1,0 +1,1120 @@
+<style>.control-wrap {  margin: 10px 0;}.maid-text{background-color: #fff;font-size: 1em;height: auto;line-height: normal;margin: 0 0 3px;outline: medium none;padding: 5px 8px;width: 100%;}.maid-multitext{background-color: #fff;font-size: 1em;height: auto;line-height: normal;margin: 0 0 3px;outline: medium none;padding: 5px 8px;width: 80%;}
+.personalheading
+{
+    float: left;
+    background: #e6e6e6;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 39px;
+    padding-left: 18px;
+    color: #000000;
+}
+.chosen-container-single .chosen-single{height: 30px;
+    border: 1px solid #ddd;
+    border-radius: 0;     box-shadow: inset 0 1px 2px rgba(0,0,0,.07); line-height: 28px;}
+    input[readonly].maid_logo_fr{background: #fff;}
+    .control-wrap label{width: 160px; float: left;}
+ .personal_details .control-wrap input, .personal_details .control-wrap textarea, .personal_details .control-wrap .chosen-container {width:75%; float:right;}
+ .personal_details .control-wrap {
+    margin: 10px 0 0;  min-height: 35px;
+    display: block;
+    float: left;
+    width: 49%;
+}
+#work_experience{border:none !important;}
+ .personal_details .control-wrap:nth-child(2n){float:right; clear: right;}
+
+ .personal_details.fdw_skills .control-wrap:nth-child(2n){float:left;}
+
+#post-body.columns-2 #postbox-container-1{width:auto;}
+.personal_details .control-wrap .chosen-container{width:75% !important;}
+#poststuff #post-body.columns-2 {
+    margin-right: 172px;
+}
+#post-body-content{min-width: 100%;}
+#maidlogo-fr{margin-top: 10px;
+    margin-bottom: 30px;
+    background: #e6e6e6;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    font-weight: bold; 
+    height: 35px;
+    color: #000; }
+
+.remark_custm{padding-top: 20px;
+    float: left;
+    width: 100%;}
+.table_custm tr th:first-child{width: 70%;}
+.table_custm{margin-top:10px; margin-bottom:20px; width:100%; float:left;}
+.remark_custm label{width:100px; float:left;}
+.remark_custm textarea{width: 75%; float:right; margin-right:2px;}
+.btn_cutm{background:#e6e6e6 !important; color:#000 !important; border-color:#e6e6e6 !important; font-weight: bold; text-shadow:none !important; box-shadow:none !important;}  
+.remove_btn{    float: right;
+    clear: right;
+    background: red;
+    color: #fff;
+    font-size: 15px;
+    border: none;
+    border-radius: 50%;
+    height: 22px;
+    width: 22px; margin-top:5px; 
+    cursor: pointer;
+}
+.chosen-results{width:100%;}
+
+.remove_btn span{position: relative; top:-2px;}
+
+.fdw_skills .control-wrap.skill_label label {
+    width: 700px !important;
+    float: left !important;
+}
+
+.personal_details .skill_label {
+    margin: 10px 0 0;
+    min-height: 35px;
+    display: block;
+    float: left;
+    width: 98% !important;
+    font-weight: bold;
+}
+
+.fdw_skills .control-wrap input{
+    width: auto; 
+    float: none; 
+}
+
+.fdw_skills .control-wrap label{width: 200px; float: left;}
+
+.medical .control-wrap input[type="checkbox"]{
+    width: auto !important; 
+    float: none; 
+}
+.medical .control-wrap input{
+    float: none; 
+}
+.illness {margin-right : 10px;float:left;}
+div.illness {width: 124px;}
+.emp_work {margin-right : 10px;float:left;}
+div.emp_work {width: 50px;}
+
+#employment_history{border:none !important;}
+
+/*.employment_history .control-wrap:nth-child(2n) {
+    float: left;
+    clear: both;
+    margin-left: 5px;
+}
+
+.employment_history .control-wrap:nth-child(1n) label{width: 160px; float: left; margin-left :20px;}*/
+</style>
+
+
+<div class="wrap">
+	<div id="icon-tools" class="icon32"></div>
+	<h1 class="wp-heading-inline"><?php// _e('Agence', 'st-maid'); ?> Employement Detail</h1>
+	<hr class="wp-header-end">
+	<h2><?php/* _e('Add New Agence'); $cur_lan = pll_current_language('slug'); if($cur_lan == ''){ $cur_lan = pll_default_language('slug');} */?></h2>
+	<div class="welcome-panel">
+	<form name="maidedit" method="post" id="maidedit" autocomplete="off">
+		<input autocomplete="false" name="hidden" type="text" style="display:none;">
+		<div style="width: 83%;" class="personalheading">
+                        Personal Details</div>
+	<div id="poststuff">
+	<div id="post-body" class="metabox-holder columns-2">
+	<div id="post-body-content" style="position: relative;">
+		<div id="titlediv">
+			<div class="personal_details">
+			<div class="control-wrap">
+			<label for="code">Code <span class="required">*</span></label>
+			<input class="maid-text" name="code" value="" id="code" maxlength="15" type="text" required autocomplete="off">			
+			</div>
+			<div class="control-wrap">
+			<label for="salary">Salary</label>
+			<input class="maid-text" name="salary" value="" id="salary" type="number" autocomplete="off">
+			</div>
+			<div class="control-wrap">
+			<label for="name">Name <span class="required">*</span></label>
+			<input class="maid-text" name="name" autocomplete="nope" value="" id="name" maxlength="50"  type="text" required >			
+			</div>
+			<div class="control-wrap">
+			<label for="date_of_birth">Date of Birth<span class="required">*</span></label>
+			<input class="maid-text" name="date_of_birth" value="" id="datepicker" maxlength="50" type="text" required autocomplete="off" >			
+			</div>
+			<div class="control-wrap">
+			<label for="age">Age<span class="required">*</span></label>
+			<input class="maid-text" name="age" value="" id="age" maxlength="50" type="text" required autocomplete="off">			
+			</div>
+			<div class="control-wrap">
+			<label for="place_of_birth">Place of Birth<span class="required">*</span></label>
+			<input class="maid-text" name="place_of_birth" value="" id="place_of_birth" maxlength="50" type="text" required autocomplete="off">			
+			</div>
+			<div class="control-wrap">
+			<label for="height">Height<span class="required">*</span></label>
+			<input class="maid-text" name="height" value="" id="height" maxlength="50" type="text" required autocomplete="off">			
+			</div>
+			<div class="control-wrap">
+			<label for="weight">Weight<span class="required">*</span></label>
+			<input class="maid-text" name="weight" value="" id="weight" maxlength="50" type="text" required autocomplete="off">			
+			</div>
+			<div class="control-wrap">
+			<label for="nationality">Nationality<span class="required">*</span></label>
+			<input class="maid-text" name="nationality" value="" id="nationality" maxlength="50" type="text" required autocomplete="off">			
+			</div>
+			<div class="control-wrap">
+			<label for="address">Address</label>
+			<textarea class="maid-text" rows="5" name="address" value="" id="address" autocomplete="off"></textarea>		
+			</div>
+			<div class="control-wrap">
+			<label for="religion">Religion<span class="required">*</span></label>
+			<input class="maid-text" name="religion" value="" id="religion" maxlength="50" type="text" required autocomplete="off">		
+			</div>
+			<div class="control-wrap">
+			<label for="education">Education<span class="required">*</span></label>
+			<input class="maid-text" name="education" value="" id="education" maxlength="50" type="text" required autocomplete="off">		
+			</div>
+
+			<div class="control-wrap">
+			<label for="contact_no">Contact Number<span class="required">*</span></label>
+			<input class="maid-text" name="contact_no" value="" id="contact_no" maxlength="50" type="text" required autocomplete="nope">			
+			</div>
+
+			<div class="control-wrap">
+			<label for="marrital_status">Marrital Status <span class="required">*</span></label>
+			<select name="marrital_status" id="marrital_status" class="maid-text stchosen" required>
+				<option value="1">Single</option>
+				<option value="2">Married</option>
+				<option value="3">Separated</option>
+				<option value="4">Widow</option>
+				<?php 
+					global $wpdb;
+					$communetable = $wpdb->prefix . "commune";
+					$communes = $wpdb->get_results("SELECT name FROM `$communetable` ");
+					if(!empty($communes)){
+						  foreach($communes as $type){
+							  echo '<option value="'.$type->name.'">'.$type->name.'</option>';
+						  }
+					}
+				?>
+			</select>
+			</div>
+			<div class="control-wrap">
+				<label for="current_status">Current Status<span class="required">*</span></label>
+				<input class="maid-text" name="current_status" value="" id="current_status" maxlength="50" type="text" required autocomplete="off">		
+			</div>
+			<!-- <div class="control-wrap">
+			<label for="category">Category <span class="required">*</span></label>
+			<select name="category[]" id="category" class="maid-text stchosen" required multiple>
+			<option value="">Select Category</option>
+				<?php 
+					$maid_cat_table = $wpdb->prefix . "maid_cat";
+					$name = "name_$cur_lan";
+					$query = "SELECT id, $name FROM `$maid_cat_table` where is_deleted = 1 GROUP BY `$name` ORDER BY `$name`";
+					$categories = $wpdb->get_results($query);
+					  if(!empty($categories)){
+						  foreach($categories as $type){
+						  echo "<option value='{$type->id}'>{$type->$name}</option>";
+						}
+					}
+				?>
+			</select>
+			</div> -->
+			
+			<div class="control-wrap lgwrp">
+				<label for="maid_logo_fr" style="vertical-align:top;">Photo</label>
+				<input class="maid_logo_fr" type="text" size="36" name="maid_logo_fr" readonly="readonly" value=""  style="vertical-align:top;"/>				
+				<input id="maidlogo-fr" class="button staff_button" type="button" value="Upload Image" />
+				<img src="" id="logofr" alt="" width="120px"/>
+			</div>
+
+			<div class="control-wrap">
+			<label for="name_of_airport">Name of Port/Airport<span class="required">*</span></label>
+			<input class="maid-text" name="name_of_airport" value="" id="name_of_airport" maxlength="50" type="text" required autocomplete="nope">			
+			</div>
+
+			<div class="control-wrap" style="margin-bottom: 30px;">
+				<label for="maid_type">Maid Type<span class="required">*</span></label>
+				<select name="maid_type" id="maid_type" class="maid-text stchosen" >
+					<option value="New">New</option>
+					<option value="Transfer">Transfer</option>
+					<option value="Misc">Misc</option>
+			    </select>
+			</div>
+
+			<div class="control-wrap" style="margin-bottom: 30px;">
+				<label for="maid_type">Off Day<span class="required">*</span></label>
+				<input class="maid-text" name="off_day" value="" id="off_day" type="text" autocomplete="off" min="0">
+			</div>
+
+		</div>
+			<!-- <div class="control-wrap lgwrp">
+				<label for="maid_logo_en" style="vertical-align:top;">Agence Logo (English)</label>
+				<input class="maid_logo_en" type="text" size="36" name="maid_logo_en" readonly="readonly" value="" style="vertical-align:top;" />
+				<input id="maidlogo-en" class="button staff_button" type="button" value="Upload Agence Image" />
+				<img src="" id="logoen" alt="" width="120px"/>
+			</div>
+			<div class="control-wrap lgwrp">
+				<label for="maid_logo_nl" style="vertical-align:top;">Agence Logo (Netherlands)</label>
+				<input class="maid_logo_nl" type="text" size="36" name="maid_logo_nl" readonly="readonly" value="" style="vertical-align:top;" />
+				<input id="maidlogo-nl" class="button staff_button" type="button" value="Upload Agence Image" />
+				<img src="" id="logonl" alt="" width="120px"/>
+			</div> -->
+
+			<div style="width: 98%;" class="personalheading">
+                        Family Details
+            </div>&nbsp
+			<div class="personal_details" style="padding-bottom: 20px; float:left; width:100%;">
+	            <div class="control-wrap" id="field_no_of_children" style="display:none;">
+				<label for="no_of_children">No of Children</label>
+				<input class="maid-text" name="no_of_children" value="" id="no_of_children" maxlength="50" type="text" autocomplete="off">		
+				</div>
+
+				<div class="control-wrap" id="field_children_age" style="display:none;">
+				<label for="children_age">Age</label>
+				<input class="maid-text" name="children_age" value="" id="children_age" maxlength="50" type="text" autocomplete="off">		
+				</div>
+
+				<div class="control-wrap">
+				<label for="no_of_siblings">Number of Siblings</label>
+				<input class="maid-text" name="no_of_siblings" value="" id="no_of_siblings" maxlength="50" type="text" autocomplete="off">		
+				</div>
+
+				<div class="control-wrap">
+				<label for="my_number">I am Number</label>
+				<input class="maid-text" name="my_number" value="" id="my_number" maxlength="50" type="text" autocomplete="off">		
+				</div>
+			</div>
+
+			<div style="width: 98%;" class="personalheading">
+                 MEDICAL HISTORY/DIETARY RESTRICTIONS
+            </div>&nbsp
+			<div class="personal_details medical" style="padding-bottom: 20px; float:left; width:100%;">
+	            <div class="control-wrap" id="" >
+					<label for="allergies">Allergies</label>
+					<input class="maid-text" name="allergies" value="" id="allergies" maxlength="50" type="text" autocomplete="off">		
+				</div>
+
+				<div class="control-wrap" id="">
+					<label for="disability">Physical Disabilities</label>
+					<input class="maid-text" name="disability" value="" id="disability" maxlength="50" type="text" autocomplete="off">		
+				</div>
+
+				<div class="control-wrap" id="">
+					<label for="diet">Dietary Restrictions</label>
+					<input class="maid-text" name="diet" value="" id="diet" maxlength="50" type="text" autocomplete="off">		
+				</div>
+
+				<div class="control-wrap" id="">
+					<label>MENTAL ILLNESS</label>
+					<div class="emp_work"><input type="checkbox" name="mental_illness" value="1" id="" class="illness1" >Yes</div>
+	                <div class="emp_work"><input type="checkbox" name="mental_illness" value="0" id="" class="illness1" >No
+	                </div>
+                </div>
+
+                <div class="control-wrap" id="" style="clear:both;">
+					<label>EPILEPSY</label>
+					<div class="emp_work"><input type="checkbox" name="epilepsy" value="1" id="" class="illness2">Yes</div>
+	                <div class="emp_work"><input type="checkbox" name="epilepsy" value="0" id="" class="illness2">No
+	                </div>
+                </div>
+
+                <div class="control-wrap" id="">
+					<label>ASTHMA</label>
+					<div class="emp_work"><input type="checkbox" name="asthma" value="1" id="" class="illness3">Yes</div>
+	                <div class="emp_work"><input type="checkbox" name="asthma" value="0" id="" class="illness3">No
+	                </div>
+                </div>
+
+                <div class="control-wrap" id="">
+					<label>DIABETES</label>
+					<div class="emp_work"><input type="checkbox" name="diabetas" value="1" id="" class="illness4">Yes</div>
+	                <div class="emp_work"><input type="checkbox" name="diabetas" value="0" id="" class="illness4">No
+	                </div>
+                </div>
+
+                <div class="control-wrap" id="">
+					<label>HYPERTENSION</label>
+					<div class="emp_work"><input type="checkbox" name="hypertension" value="1" id="" class="illness5">Yes</div>
+	                <div class="emp_work"><input type="checkbox" name="hypertension" value="0" id="" class="illness5">No
+	                </div>
+                </div>
+
+                <div class="control-wrap" id="">
+					<label>TUBERCULOSIS</label>
+					<div class="emp_work"><input type="checkbox" name="tuber" value="1" id="" class="illness6">Yes</div>
+	                <div class="emp_work"><input type="checkbox" name="tuber" value="0" id="" class="illness6">No
+	                </div>
+                </div>
+
+                <div class="control-wrap" id="">
+					<label>HEART DISEAS</label>
+					<div class="emp_work"><input type="checkbox" name="heart" value="1" id="" class="illness7">Yes</div>
+	                <div class="emp_work"><input type="checkbox" name="heart" value="0" id="" class="illness7">No
+	                </div>
+                </div>
+
+                <div class="control-wrap" id="">
+					<label>MALARIA</label>
+					<div class="emp_work"><input type="checkbox" name="malaria" value="1" id="" class="illness8">Yes</div>
+	                <div class="emp_work"><input type="checkbox" name="malaria" value="0" id="" class="illness8">No
+	                </div>
+                </div>
+
+                <div class="control-wrap" id="">
+					<label>OPERATIONS</label>
+					<div class="emp_work"><input type="checkbox" name="operation" value="1" id="" class="illness9">Yes</div>
+	                <div class="emp_work"><input type="checkbox" name="operation" value="0" id="" class="illness9">No
+	                </div>
+                </div>
+
+                <div class="control-wrap second_sec" id="other_illnesses">
+					<label for="other_illness">Other Illness</label>
+					<input class="maid-text" name="other_illness" value="" id="other_illness" maxlength="50" type="text">		
+				</div>
+
+				<!-- <div class="control-wrap" id="" >
+				  <label for="illness">Past And Existing Illnesses</label><br/>
+					 <div class="illness"><input type="checkbox" name="illness[]" value="1">MENTAL ILLNESS</div>
+					 <div class="illness"><input type="checkbox" name="illness[]" value="2">EPILEPSY </div>
+					 <div class="illness"><input type="checkbox" name="illness[]" value="3">ASTHMA </div>
+					 <div class="illness"><input type="checkbox" name="illness[]" value="4">DIABETES </div>
+	                 <div class="illness"><input type="checkbox" name="illness[]" value="5">HYPERTENSION </div>
+					 <div class="illness"><input type="checkbox" name="illness[]" value="6">TUBERCULOSIS </div>
+					 <div class="illness"><input type="checkbox" name="illness[]" value="7">HEART DISEAS </div>
+					 <div class="illness"><input type="checkbox" name="illness[]" value="8">MALARIA </div><br/>
+					 <div class="illness"><input type="checkbox" name="illness[]" value="9">OPERATIONS </div>
+					 <div class="illness"><input type="checkbox" name="illness[]" value="10" id= "other_ill">OTHERS </div>
+				</div>
+ -->
+				<div class="control-wrap" id="">
+				  <label for="food_preferences">Food Handling Preferences</label> <br/>
+					 <div class="illness"><input type="checkbox" name="food_preferences[]" value="1">NO PORK</div>
+					 <div class="illness"><input type="checkbox" name="food_preferences[]" value="2">NO BEEF</div>
+					 <div class="illness"><input id= "other_food" type="checkbox" name="food_preferences[]" value="3">OTHERS</div>
+				</div>
+
+				<div class="control-wrap" id="other_food_pref" style="display:none;clear:both">
+					<label for="other_food">Other Food Preferences</label>
+					<input class="maid-text" name="other_food" value="" id="other_food" maxlength="50" type="text" autocomplete="off">		
+				</div>
+
+			</div>
+
+			<div style="width: 98%;" class="personalheading">
+                        Other Details
+            </div>&nbsp
+			<div class="personal_details" style="padding-bottom: 20px; float:left; width:100%;">
+	            <div class="control-wrap" id="">
+				<label for="rest_day">Preference for Rest Day</label>
+				<input class="maid-text" name="rest_day" value="" id="rest_day" maxlength="50" type="text" autocomplete="off">		
+				</div>
+
+				<div class="control-wrap" id="">
+				<label for="other_remark">Other Remarks</label>	
+				<textarea class="maid-text" rows="5" name="other_remark" id="other_remark" autocomplete="off"></textarea>	
+				</div>
+
+			</div>
+            <?php /*
+            <div style="width: 98%;" class="personalheading">
+                        Work Experience
+            </div>
+			<div id="work_experience_container">
+	            <div id="work_experience" class="personal_details">
+	            	<div class="control-wrap">
+						<label for="time_duration">Time Duration</label>
+						<input class="maid-text" name="time_duration[]" value="" id="time_duration" maxlength="50" type="text">		
+					</div>
+					<div class="control-wrap">
+						<label for="employer_name">Name of Employer</label>
+						<input class="maid-text" name="employer_name[]" value="" id="employer_name" maxlength="50" type="text">		
+					</div>
+					<div class="control-wrap">
+						<label for="e_address">Address</label>
+						<textarea class="maid-text" rows="5" name="e_address[]" id="e_address"></textarea>		
+					</div>
+					<div class="control-wrap">
+						<label for="main_duties">Main Duties</label>
+						<textarea class="maid-text" rows="4" name="main_duties[]" id="main_duties"></textarea>		
+					</div>
+	            </div>
+	        </div>
+	        <div id="add_experience" style="float: right; width:100%;">
+				<a id="addButton" style="float: right; margin:10px 0;" href="javascript:void(0);" onclick="add_experience()" class="dellbtn"><img src="http://localhost/hisuria/wp-content/uploads/2018/10/plusmore.png"/></a>
+			</div>
+            */?>  
+			<div style="width: 98%;" class="personalheading">
+                EMPLOYMENT HISTORY OVERSEAS
+            </div>
+			<div id="employment_history_container">
+	            <div id="employment_history" class="personal_details">
+	            	<div class="control-wrap">
+						<label for="from_date">From</label>
+						<input class="maid-text from_date" name="from_date[]" value="" id="from_date" maxlength="50" type="text" autocomplete="off"></label>		
+					</div>
+					<div class="control-wrap">
+						<label for="to_date">To</label>
+						<input class="maid-text to_date" name="to_date[]" value="" id="to_date" maxlength="50" type="text" autocomplete="off"></label>	
+					</div>
+					<div class="control-wrap">
+						<label for="country">Country</label>
+						<input class="maid-text" name="country[]" value="" id="country" maxlength="50" type="text" autocomplete="nope">		
+					</div>
+					<div class="control-wrap">
+						<label for="employer">Employer Name</label>
+						<input class="maid-text" name="employer[]" value="" id="employer" maxlength="50" type="text" autocomplete="off">		
+					</div>
+					
+					<div class="control-wrap">
+						<label for="work_duties">Work Duties</label>
+						<textarea class="maid-text" rows="4" name="work_duties[]" id="work_duties" autocomplete="off"></textarea>		
+					</div>
+					<div class="control-wrap">
+						<label for="remark_emp">Reamrk</label>
+						<textarea class="maid-text" rows="4" name="remark_emp[]" id="remark_emp" autocomplete="off"></textarea>		
+					</div>
+
+	            </div>
+	        </div>
+	        <div id="add_employment_history" style="float: right; width:100%;">
+				<a id="addButton" style="float: right; margin:10px 0;" href="javascript:void(0);" onclick="add_employment_history()" class="dellbtn"><img src="http://localhost/hisuria/wp-content/uploads/2018/10/plusmore.png"/></a>
+
+			</div>
+
+            <div style="width: 98%;" class="personalheading">
+                Language Profiency
+            </div>
+
+            <table style="width:100%" class="table_custm">
+            	<tr style="text-align: left;">
+            		<th>Language</th>
+            		<th>Spoken</th>
+            		<th>Written</th>
+            	</tr>
+            	<tr>
+            		<td>Maindarin</td>
+            		<td>
+            			<select name="language[mandarin][]" id="mandarin_spocken">
+							<option value="">--Select One--</option>
+							<option value="Poor">Poor</option>
+							<option value="Fair">Fair</option>
+							<option value="Good">Good</option>
+
+						</select>
+            		</td>
+            		<td>
+            			<select name="language[mandarin][]" id="mandarin_written">
+							<option value="">--Select One--</option>
+							<option value="Poor">Poor</option>
+							<option value="Fair">Fair</option>
+							<option value="Good">Good</option>
+
+						</select>
+            		</td>
+            	</tr>
+            	<tr>
+            		<td>ENGLISH</td>
+            		<td>
+            			<select name="language[english][]" id="english_spocken">
+							<option value="">--Select One--</option>
+							<option value="Poor">Poor</option>
+							<option value="Fair">Fair</option>
+							<option value="Good">Good</option>
+
+						</select>
+            		</td>
+            		<td>
+            			<select name="language[english][]" id="english_written">
+							<option value="">--Select One--</option>
+							<option value="Poor">Poor</option>
+							<option value="Fair">Fair</option>
+							<option value="Good">Good</option>
+
+						</select>
+            		</td>
+            	</tr>
+            	<tr>
+            		<td>MALAY</td>
+            		<td>
+            			<select name="language[malay][]" id="malay_spocken">
+							<option value="">--Select One--</option>
+							<option value="Poor">Poor</option>
+							<option value="Fair">Fair</option>
+							<option value="Good">Good</option>
+
+						</select>
+            		</td>
+            		<td>
+            			<select name="language[malay][]" id="malay_written">
+							<option value="">--Select One--</option>
+							<option value="Poor">Poor</option>
+							<option value="Fair">Fair</option>
+							<option value="Good">Good</option>
+
+						</select>
+            		</td>
+            	</tr>
+            </table>
+            <?php /*
+            <div style="width: 98%;" class="personalheading">
+                        Work Areas
+            </div>
+
+            <table style="width:100%" class="table_custm">
+            	<tr style="text-align: left;">
+            		<th>Task</th>
+            		<th>Willing</th>
+            		<th>Experience</th>
+            	</tr>
+            	<?php 
+					$work_area_tbl = $wpdb->prefix . "work_areas_master";
+					//$query = "SELECT id, lable FROM `$work_area_tbl` where is_deleted = 1 GROUP BY `$name` ORDER BY `$name`";
+					$query = "SELECT * FROM `$work_area_tbl` ORDER BY `id`";
+					$areas = $wpdb->get_results($query);
+					
+
+					  if(!empty($areas)){
+						  foreach($areas as $area){ ?>
+						  <tr>
+		            		<td><?php echo $area->lable; ?></td>
+		            		<td>
+		            			<select name="work_area[<?= $area->id; ?>][]" id="work_area">
+									<option value="">--Select One--</option>
+									<option value="Yes">Yes</option>
+									<option value="No">No</option>
+								</select>
+		            		</td>
+		            		<td>
+		            			<select name="work_area[<?= $area->id; ?>][]" id="work_area">
+									<option value="">--Select One--</option>
+									<option value="Poor">Poor</option>
+									<option value="Fair">Fair</option>
+									<option value="Good">Good</option>
+									<option value="Very Good">Very Good</option>
+									<option value="N.A">N.A</option>
+								</select>
+		            		</td>
+		            	</tr>
+		            	<?php
+						}
+					}
+				?>
+            </table> */ ?>
+</br>
+            <div style="width: 98%;" class="personalheading">
+                Fdw Skills (Based On FDW'S Declaration)
+            </div>
+			<div id="Fdw_skills_container">
+	            <div id="fdw_skills" class="personal_details fdw_skills">
+
+                    <div class="control-wrap">
+                        <input type="checkbox" name="fdw_declare" value="1">Based on Fdw's Declaration, No Evaluation/Observation by Singapore Ea or Overseas Training Centre/Ea
+					</div>
+
+	                <div class="control-wrap">
+                        <label>Training Centre Singapore EA</label><br/>
+                         <input type="checkbox" name="fdw_interview[]" value="1">Interviewed via Telephone/Teleconference<br>
+                         <input type="checkbox" name="fdw_interview[]" value="2">Interviewed via Videoconference<br>
+                         <input type="checkbox" name="fdw_interview[]" value="3">Interviewed in Person<br>
+                         <input type="checkbox" name="fdw_interview[]" value="4">Interviewed in Person and Also Made Observation of Fdw in the Areas of Work Listed in Table<br>
+					</div>	
+
+                <?php 
+					$work_area_tbl = $wpdb->prefix . "maid_skill_master";
+					
+					$query = "SELECT * FROM `$work_area_tbl` ORDER BY `id`";
+					$areas = $wpdb->get_results($query);
+					$count = $wpdb->num_rows;
+					?>
+					 <input class="maid-text" name="skill_count" value="<?php echo $count; ?>" id="skill_count" maxlength="50" type="hidden">
+					<?php 
+					if(!empty($areas)){
+				    foreach($areas as $area){ ?>
+                   
+	            	<div class="skill_label">
+						<label><?php echo $area->lable; ?></label>
+					</div>
+                    <?php if($area->id != 2 && $area->id != 3 && $area->id != 4)  { ?>
+					<div class="control-wrap">
+                        <label>Other Details</label> 
+                        <input class="maid-text" name="other_<?= $area->id; ?>" value="" id="other_<?= $area->id; ?>" maxlength="50" type="text" autocomplete="off">	
+					</div>
+                    <?php } ?>
+					<div class="control-wrap">
+                        <label>Willingness</label> 
+                        <input type="radio" value="Yes" name="willingness_<?= $area->id; ?>">Yes
+                        <input type="radio" value="No" name="willingness_<?= $area->id; ?>">No
+					</div>
+
+					<div class="control-wrap">
+                        <label>Experience</label> 
+                        <input type="radio" value="Yes" name="experience_<?= $area->id; ?>">Yes
+                        <input type="radio" value="No" name="experience_<?= $area->id; ?>">NO
+
+					</div>	
+
+					<div class="control-wrap">
+                        <label>Assessment</label> 
+                        <select name="skill_area_<?= $area->id; ?>" id="skill_area_<?= $area->id; ?>">
+							<option value="N.A">N.A</option>
+							<option value="Poor">Poor</option>
+							<option value="Fair">Fair</option>
+							<option value="Good">Good</option>
+							<option value="Very Good">Very Good</option>
+							<option value="Excellent">Excellent</option>
+							
+						</select>
+					</div>	
+                    
+                    <div class="control-wrap exp_year"  style="display:none;" id="exp_year_<?= $area->id; ?>">
+                        <label>Experience Year</label> 
+                        <input class="maid-text" name="expe_year_<?= $area->id; ?>" value="" id="expe_year_<?= $area->id; ?>" maxlength="50" type="text" autocomplete="off">	
+					</div>
+
+					<?php 
+					    }
+					} ?>    
+
+					
+	            </div>
+	        </div>
+        </br>
+
+            <div style="width: 98%;" class="personalheading">
+                Fdw Skills (Interviewed By Overseas Training Centre)
+            </div>
+			<div id="Fdw_skills_container">
+	            <div id="fdw_skills" class="personal_details fdw_skills">
+
+                    <div class="control-wrap">
+                        <input type="checkbox" name="tc_declare" value="1">Interviewed by Overseas Training Centre/Ea
+					</div>
+
+	            	<div class="control-wrap">
+                        <label>Foreign Training Centre Name</label> 
+                        <input class="maid-text" name="training_centre" value="" id="training_centre" maxlength="50" type="text" autocomplete="off">	
+					</div>
+
+					<div class="control-wrap">
+                        <label>Third Party Certified No</label> 
+                        <input class="maid-text" name="certified_no" value="" id="certified_no" maxlength="50" type="text" autocomplete="off">	
+					</div>
+
+					<div class="control-wrap">
+                        <label>Training Centre Interview</label> <br/>
+                         <input type="checkbox" name="tc_interview[]" value="1">Interviewed via Telephone/Teleconference<br>
+                         <input type="checkbox" name="tc_interview[]" value="2">Interviewed via Videoconference<br>
+                         <input type="checkbox" name="tc_interview[]" value="3">Interviewed in Person<br>
+                         <input type="checkbox" name="tc_interview[]" value="4">Interviewed in Person and Also Made Observation of Fdw in the Areas of Work Listed in Table<br>
+					</div>
+
+
+                <?php 
+					$work_area_tbl = $wpdb->prefix . "maid_skill_master";
+					
+					$query = "SELECT * FROM `$work_area_tbl` ORDER BY `id`";
+					$areas = $wpdb->get_results($query);
+					$count = $wpdb->num_rows;
+					?>
+					 <input class="maid-text" name="skill_count" value="<?php echo $count; ?>" id="skill_count" maxlength="50" type="hidden" autocomplete="off">
+					<?php 
+					if(!empty($areas)){
+				    foreach($areas as $area){ ?>
+                   
+	            	<div class="skill_label">
+						<label><?php echo $area->lable; ?></label>
+					</div>
+                    <?php if($area->id != 2 && $area->id != 3 && $area->id != 4)  { ?>
+					<div class="control-wrap">
+                        <label>Other Details</label> 
+                       
+                        <input class="maid-text" name="other_skill_<?= $area->id; ?>" value="" id="other_skill_<?= $area->id; ?>" maxlength="50" type="text" autocomplete="off">	
+					</div>
+					<?php } ?>
+
+					<div class="control-wrap">
+                        <label>Willingness</label> 
+                        <input type="radio" value="Yes" name="willingness_skill_<?= $area->id; ?>">Yes
+                        <input type="radio" value="No" name="willingness_skill_<?= $area->id; ?>">No
+					</div>
+
+					<div class="control-wrap">
+                        <label>Experience</label> 
+                        <input type="radio" value="Yes" name="experience_skill_<?= $area->id; ?>">Yes
+                        <input type="radio" value="No" name="experience_skill_<?= $area->id; ?>">NO
+
+					</div>	
+
+					<div class="control-wrap">
+                        <label>Assessment</label> 
+                        <select name="ass_skill_<?= $area->id; ?>" id="ass_skill_<?= $area->id; ?>">
+							<option value="N.A">N.A</option>
+							<option value="Poor">Poor</option>
+							<option value="Fair">Fair</option>
+							<option value="Good">Good</option>
+							<option value="Very Good">Very Good</option>
+							<option value="Excellent">Excellent</option>
+							
+						</select>
+					</div>	
+                    
+                    <div class="control-wrap exp_year"  style="display:none;" id="exp_year_skill_<?= $area->id; ?>">
+                        <label>Experience Year</label> 
+                        <input class="maid-text" name="expe_year_skill_<?= $area->id; ?>" value="" id="expe_year_skill_<?= $area->id; ?>" maxlength="50" type="text" autocomplete="off">	
+					</div>
+						
+
+					<?php 
+					    }
+					} ?>    
+
+					
+	            </div>
+	        </div>
+	        <br/>
+
+	        <div style="width: 98%;" class="personalheading">
+                Employment History in Singapore
+            </div>
+
+            <div class="form-control" style="margin:15px 0 25px; float:left;">
+				<label><strong>Previous Working Experience in Singapore</strong></label><br/>
+				<div class="emp_work"><input type="checkbox" name="exp" value="1" id="" class="exp_list">Yes</div>
+                <div class="emp_work"><input type="checkbox" name="exp" value="0" id="" class="exp_list">No</div>
+			</div>
+
+			<div style="width: 98%;" class="personalheading">
+                Feedback from Previous Employers in Singapore
+            </div>
+			<div id="feedback_container">
+	            <div id="feedback_div" class="personal_details">
+					<div class="control-wrap">
+						<label for="employer_name">Name of Employer</label>
+						<input class="maid-text" name="employer_name[]" value="" id="employer_name" maxlength="50" type="text" autocomplete="nope">		
+					</div>
+					<div class="control-wrap">
+						<label for="feedback">Feedback</label>
+						<textarea class="maid-text" rows="4" name="feedback[]" id="feedback" autocomplete="off"></textarea>		
+					</div>
+	            </div>
+	        </div>
+	        <div id="add_feedback" style="float: right; width:100%;">
+				<a id="addFeedback" style="float: right; margin:10px 0;" href="javascript:void(0);" onclick="add_feedback();" class="dellbtn"><img src="http://localhost/hisuria/wp-content/uploads/2018/10/plusmore.png"/></a>
+			</div>
+			
+
+			<div style="width: 98%;" class="personalheading">
+                Availability of Fdw to Be Interviewed by Prospective Employer
+            </div>
+			<div id="Fdw_skills_container">
+	            <div id="fdw_skills" class="personal_details fdw_skills">
+					<div class="control-wrap">
+                         <input type="checkbox" name="fdw_availability[]" value="1">Fdw Is Not Available for Interview<br>
+                         <input type="checkbox" name="fdw_availability[]" value="2">Fdw Can Be Interviewed by Phone<br>
+                         <input type="checkbox" name="fdw_availability[]" value="3">Fdw Can Be Interviewed by Video-conference<br>
+                         <input type="checkbox" name="fdw_availability[]" value="4">Fdw Can Be Interviewed in Person
+					</div>
+				</div>
+            </div>
+            <div style="width: 98%;" class="personalheading">
+                Declaration
+            </div>
+
+            <div class="form-control" style="margin:15px 0 25px; float:left;">
+				<label><strong>Declaration</strong></label>
+				<input type="checkbox" name="declaration" value="1">I declare that all particulars given herein are true and accurate to the best of my knowledge.
+			</div>&nbsp
+
+            <div style="width: 98%;" class="personalheading">
+                 Remarks
+            </div>
+            <div class="remark_custm">
+            <div class="form-control">
+				<label for="remark">Remark Form</label>
+				<textarea class="maid-text" rows="4" name="remark" value="" id="remark" autocomplete="off"></textarea>		
+			</div>
+			</div>
+			
+			<div class="control-wrap">
+			<p class="submit" style="text-align: right;">
+				<input name="maid_csv_import_files_next" type="hidden" value="maidadd" /><input type="submit" class="button button-primary btn_cutm" name="submit" value="Save" />
+			</p>
+			</div>
+		</div>
+	</div>
+	<div id="postbox-container-1" class="postbox-container">
+		<img src="" id="imgadd" alt="" width="280px"/>
+	</div>
+	</div>
+	</div>
+	</form>	
+</div>
+
+<script type="text/javascript" language="javascript" class="init">
+    
+        jQuery(function () {
+        //Date picker
+            jQuery('#datepicker').datepicker({
+                autoclose: true,
+                changeMonth: true, 
+                changeYear: true,
+                maxDate: "today",
+                 yearRange: "-100:+00",
+                dateFormat: 'dd/mm/yy'
+            });
+
+            /*$('#from_date').datepicker({
+                autoclose: true,
+                changeMonth: true, 
+                changeYear: true,
+                maxDate: "today",
+                 yearRange: "-100:+00",
+                dateFormat: 'dd/mm/yy'
+            });
+
+            $('#to_date').datepicker({
+                autoclose: true,
+                changeMonth: true, 
+                changeYear: true,
+                maxDate: "today",
+                 yearRange: "-100:+00",
+                dateFormat: 'dd/mm/yy'
+            });*/
+        });
+
+        jQuery(document).ready(function(){
+
+	    	jQuery('.exp_list').on('change', function() {
+		       jQuery('.exp_list').not(this).prop('checked', false);  
+		    });
+
+		    jQuery('.illness1').on('change', function() {
+		       jQuery('.illness1').not(this).prop('checked', false);  
+		    });
+
+		    jQuery('.illness2').on('change', function() {
+		       jQuery('.illness2').not(this).prop('checked', false);  
+		    });
+
+		    jQuery('.illness3').on('change', function() {
+		       jQuery('.illness3').not(this).prop('checked', false);  
+		    });
+
+		    jQuery('.illness4').on('change', function() {
+		       jQuery('.illness4').not(this).prop('checked', false);  
+		    });
+
+		    jQuery('.illness5').on('change', function() {
+		       jQuery('.illness5').not(this).prop('checked', false);  
+		    });
+
+		    jQuery('.illness6').on('change', function() {
+		       jQuery('.illness6').not(this).prop('checked', false);  
+		    });
+
+		    jQuery('.illness7').on('change', function() {
+		       jQuery('.illness7').not(this).prop('checked', false);  
+		    });
+
+		    jQuery('.illness8').on('change', function() {
+		       jQuery('.illness8').not(this).prop('checked', false);  
+		    });
+
+		    jQuery('.illness9').on('change', function() {
+		       jQuery('.illness9').not(this).prop('checked', false);  
+		    });
+
+	    	jQuery('input[name^="experience"]').on('click', function() {	
+
+                var name1 = this.name;
+                var exp = jQuery(this).val();
+
+			    var cnt = name1.substring(11,12);
+
+			    if(exp == 'Yes') {
+			    	
+				        jQuery('#exp_year_' +cnt).show();
+
+			    }
+			    else {
+			            //$('#exp_year[cnt]').hide();
+			            jQuery('#exp_year_' +cnt).hide();
+			    }
+			    
+	    		
+	        });
+	   
+
+	    	jQuery('input[name^="experience_skill"]').on('click', function() {	
+
+                var name1 = this.name;
+                var exp = jQuery(this).val();
+
+			    var cnt = name1.substring(17,18);
+			    if(exp == 'Yes') {
+			
+				        jQuery('#exp_year_skill_' +cnt).show();
+
+			    }
+			    else {
+			            jQuery('#exp_year_skill_' +cnt).hide();
+			    }
+			    
+	        });
+
+
+	        jQuery("#other_food").click(function () {
+	            if (jQuery(this).is(":checked")) {
+	                jQuery("#other_food_pref").show();
+	            } else {
+	                jQuery("#other_food_pref").hide();
+	            }
+	        });
+
+	        jQuery("#other_ill").click(function () {
+	            if (jQuery(this).is(":checked")) {
+	                jQuery("#other_illnesses").show();
+	            } else {
+	                jQuery("#other_illnesses").hide();
+	            }
+	        });
+    
+
+    
+        });
+
+        
+		jQuery(document).ready(function($){
+
+			 jQuery('#my_number').blur(function() {
+		    	
+				if(jQuery.trim($('#my_number').val()) != ''){
+					var my_number = $('#my_number').val();
+					var no_of_siblings = $('#no_of_siblings').val();
+
+					if(parseInt(no_of_siblings) < parseInt(my_number)){
+							alert('Please enter valid value in my number in siblings.');
+							jQuery('#my_number').val('');
+							
+					}
+					
+				}
+			});
+
+			jQuery(".stchosen").chosen({no_results_text: "Oops, nothing found!"});
+			jQuery('#code').blur(function() {
+				if(jQuery.trim($('#code').val()) != ''){
+					jQuery.post("<?php echo site_url(); ?>/wp-admin/admin-ajax.php?action=check_code",'maidcode='+$('#code').val(),function(data){ 
+						
+						if($.trim(data) != 0){
+							alert('The entered Code already exists. Please try another Code.');
+							jQuery('#code').val('');
+							jQuery('#code').focus();
+						}
+					});
+				}
+			});
+
+			
+			/* Repeter text box for specialities */
+			var max_fields      = 10; 
+			var wrapper         = jQuery(".input_fields_wrap"); 
+			var add_button      = jQuery(".add_field_button"); 
+			
+			var x = 1;
+			jQuery(add_button).click(function(e){ 
+				e.preventDefault();
+				if(x < max_fields){ 
+					x++; 
+					jQuery(wrapper).append('<div><input type="text" maxlength="255" class="maid-multitext" name="maid_specialities_fr[]"/><a href="#" class="remove_field button">Remove</a></div>');
+				}
+			});
+			
+			jQuery(wrapper).on("click",".remove_field", function(e){ 
+				e.preventDefault(); jQuery(this).parent('div').remove(); x--;
+			})
+		});
+		function add_experience()
+		{
+			var exp_container = jQuery(".work_experience").html();
+
+			jQuery( "#work_experience_container" ).append('<div class="personal_details work_experience"><button type="button" class="remove_btn"><span>x</span></button><div class="control-wrap"><label for="employer_name">Name of Employer</label><input class="maid-text" name="employer_name[]" value="" id="employer_name" maxlength="50" type="text"></div><div class="control-wrap"><label for="time_duration">Time Duration</label><input class="maid-text" name="time_duration[]" value="" id="time_duration" maxlength="50" type="text"></div><div class="control-wrap"><label for="main_duties">Main Duties</label><textarea class="maid-text" rows="4" name="main_duties[]" id="main_duties">	</textarea></div><div class="control-wrap"><label for="e_address">Address</label><textarea class="maid-text" rows="4" name="e_address[]" id="e_address"></textarea></div></div>');
+			jQuery(".remove_btn").click(function(){
+	            jQuery(this).parent('.work_experience').remove();
+			});
+		}
+
+		function add_feedback()
+		{
+			var exp_container = jQuery(".feedback").html();
+
+			jQuery( "#feedback_container" ).append('<div id="feedback_div" class="personal_details feeback"><button type="button" class="remove_btn"><span>x</span></button><div class="control-wrap"><label for="feedback">Feedback</label><textarea class="maid-text" rows="4" name="feedback[]" id="feedback"></textarea></div><div class="control-wrap"><label for="employer_name">Name of Employer</label><input class="maid-text" name="employer_name[]" value="" id="employer_name" maxlength="50" type="text" autocomplete="nope"></div> </div>');
+			jQuery(".remove_btn").click(function(){
+	            jQuery(this).parent('.feeback').remove();
+			});
+		}
+
+		function add_employment_history()
+		{
+			var exp_container = jQuery(".employment_history").html();
+
+			var total_element = jQuery(".employment_history").length;
+
+			var j = total_element + 1;
+
+			jQuery( "#employment_history_container" ).append('<div id="" class="personal_details employment_history"><button type="button" class="remove_btn"><span>x</span></button><div class="control-wrap"><label for="to_date">To</label><input class="maid-text to_date" name="to_date[]" value="" id="to_date'+j+'" maxlength="50" type="text"></label></div> <div class="control-wrap"><label for="from_date">From</label><input class="maid-text from_date" name="from_date[]" value="" id="from_date'+j+'" maxlength="50" type="text"></label></div><div class="control-wrap"><label for="employer">Employer Name</label><input class="maid-text" name="employer[]" value="" id="employer'+j+'" maxlength="50" type="text"></div><div class="control-wrap"><label for="country">Country</label><input class="maid-text" name="country[]" value="" id="country'+j+'" maxlength="50" type="text" autocomplete="nope"></div><div class="control-wrap"><label for="remark_emp">Reamrk</label><textarea class="maid-text" rows="4" name="remark_emp[]" id="remark_emp'+j+'"></textarea></div><div class="control-wrap"><label for="work_duties">Work Duties</label><textarea class="maid-text" rows="4" name="work_duties[]" id="work_duties'+j+'"></textarea></div> </div> </div>');
+				/*$('#from_date'+j).datepicker({
+	                autoclose: true,
+	                changeMonth: true, 
+	                changeYear: true,
+	                maxDate: "today",
+	                 yearRange: "-100:+00",
+	                dateFormat: 'dd/mm/yy'
+	            });
+				$('#to_date'+j).datepicker({
+	                autoclose: true,
+	                changeMonth: true, 
+	                changeYear: true,
+	                maxDate: "today",
+	                 yearRange: "-100:+00",
+	                dateFormat: 'dd/mm/yy'
+	            });*/
+
+	            
+			jQuery(".remove_btn").click(function(){
+	            jQuery(this).parent('.employment_history').remove();
+			});
+		}
+
+		jQuery("#marrital_status").change(function(){
+			if(this.value == 1)
+			{
+				jQuery('#no_of_children').val('');
+		    	jQuery("#field_no_of_children").css("display", "none");
+		    	jQuery('#children_age').val('');
+		    	jQuery("#field_children_age").css("display", "none");
+		    }
+		    else
+		    {
+		    	jQuery("#field_no_of_children").css("display", "inline");
+		    	jQuery("#field_children_age").css("display", "inline");
+		    }
+		});
+
+		jQuery('#age').on('keydown keyup', function(e) {
+		 	//var regExp = new RegExp('[a-zA-Z]');
+		 	var regExp = new RegExp('^[0-9\b]+');
+
+		    var value = String.fromCharCode(e.which) || e.key;
+
+		    // Do not allow alphabets to be entered.
+		    if (!regExp.test(value)) {
+
+		      e.preventDefault();
+		      return false;
+		    }
+
+		}); // End of 'keydown keyup' method.
+
+	</script>
+</div>

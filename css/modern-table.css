@@ -1,0 +1,142 @@
+#example {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin: 20px 0;
+    background: #fff;
+}
+
+#example thead th {
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: 600;
+    padding: 15px;
+    text-align: left;
+    border-bottom: 2px solid #e0e0e0;
+    font-size: 14px;
+}
+
+#example tbody td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e0e0e0;
+    color: #444;
+    font-size: 13px;
+    transition: background-color 0.2s;
+}
+
+#example tbody tr:last-child td {
+    border-bottom: none;
+}
+
+#example tbody tr:hover {
+    background-color: #f5f8ff;
+}
+
+/* Checkbox styling */
+#example input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+}
+
+/* Status column styling */
+#example td:nth-child(7) {
+    font-weight: 500;
+}
+
+/* Action buttons styling */
+#example .button {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-block;
+    margin: 0 4px;
+}
+
+.button-primary {
+    background: #0073aa;
+    color: white;
+    border: none;
+}
+
+.button-secondary {
+    background: #f8f9fa;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+/* Filter dropdown styling */
+#status_filter {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    margin: 10px 0;
+    background: #fff;
+}
+
+/* DataTables specific styling */
+.dataTables_length,
+.dataTables_filter {
+    margin: 15px 0;
+}
+
+.dataTables_length select,
+.dataTables_filter input {
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 0 5px;
+}
+
+.dataTables_info {
+    margin: 15px 0;
+    color: #666;
+}
+
+.dataTables_paginate {
+    margin: 15px 0;
+}
+
+.dataTables_paginate .paginate_button {
+    padding: 6px 12px;
+    margin: 0 2px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.dataTables_paginate .paginate_button.current {
+    background: #0073aa;
+    color: white !important;
+    border: none;
+}
+
+.dataTables_paginate .paginate_button:hover {
+    background: #f5f8ff;
+    color: #0073aa !important;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    #example thead th,
+    #example tbody td {
+        padding: 10px;
+    }
+    
+    .dataTables_length,
+    .dataTables_filter {
+        text-align: left;
+        float: none;
+    }
+}
+
+.welcome-panel{
+    background-color: #fff !important;
+}
