@@ -552,6 +552,72 @@
 .maid-popup-body { color: var(--text-secondary); line-height: 1.6; }
 .maid-popup-close { background: transparent; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-secondary); }
 .maid-popup-close:hover { color: var(--text-primary); }
+
+/* Chosen select alignment to match input height */
+.chosen-container { width: 100% !important; }
+.chosen-container-single .chosen-single {
+    height: 44px !important;
+    line-height: 44px !important;
+    border: 2px solid var(--border-color) !important;
+    border-radius: var(--radius) !important;
+    padding: 0 1rem !important;
+    background: #fff !important;
+    box-shadow: none !important;
+}
+.chosen-container-single .chosen-single span { line-height: 44px !important; }
+.chosen-container-single .chosen-single div { top: 8px !important; }
+
+/* Work Areas Table Styling */
+.work-areas-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    margin: 1rem 0;
+}
+
+.work-areas-table th {
+    background: var(--light-bg);
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.work-areas-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+
+.work-areas-table tr:hover {
+    background: var(--light-bg);
+}
+
+.task-name {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.work-select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    transition: var(--transition);
+    background: white;
+    color: var(--text-primary);
+}
+
+.work-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
+}
 </style>
 
 
@@ -559,7 +625,7 @@
     <div class="maid-form-header">
         <h1>📋 Maid Registration Form</h1>
         <p>Complete the form below to register a new maid. Please fill in all required fields marked with *</p>
-        <button type="button" class="btn btn-outline" onclick="fillTestData()" style="margin-top: 1rem; background: rgba(255,255,255,0.2); color: white; border-color: white;">
+        <button type="button" class="btn btn-outline" onclick="fillTestData()" style="margin-top: 1rem; background: rgba(255,255,255,0.2); color: white; border-color: white; ">
             🧪 Fill Test Data
         </button>
 			</div>
@@ -680,12 +746,12 @@
                 
                 <div class="form-group">
                     <label for="contact_no" class="form-label required">Contact Number</label>
-                    <input class="form-input" name="contact_no" value="<?php echo isset($maid_prefill['contact_no']) ? esc_attr($maid_prefill['contact_no']) : ''; ?>" id="contact_no" maxlength="50" type="text" required autocomplete="nope" placeholder="Enter contact number">
+                    <input class="form-input" name="contact_no" value="<?php echo isset($maid_prefill['contact_no']) ? esc_attr($maid_prefill['contact_no']) : ''; ?>" id="contact_no" type="number" inputmode="numeric" step="1" min="1000000" max="99999999999999" required autocomplete="nope" placeholder="Enter contact number (7-14 digits)">
                 </div>
                 
                 <div class="form-group">
                     <label for="marrital_status" class="form-label required">Marital Status</label>
-                    <select name="marrital_status" id="marrital_status" class="form-select stchosen" required>
+                    <select name="marrital_status" id="marrital_status" class="form-select stchosen chosen-select" required>
                         <option value="">Select marital status</option>
                 <option value="1" <?php echo (isset($maid_prefill['marrital_status']) && $maid_prefill['marrital_status']=='1') ? 'selected' : ''; ?>>Single</option>
                 <option value="2" <?php echo (isset($maid_prefill['marrital_status']) && $maid_prefill['marrital_status']=='2') ? 'selected' : ''; ?>>Married</option>
@@ -753,7 +819,7 @@
 
                 <div class="form-group">
                     <label for="maid_type" class="form-label required">Maid Type</label>
-                    <select name="maid_type" id="maid_type" class="form-select stchosen">
+                    <select name="maid_type" id="maid_type" class="form-select stchosen chosen-select">
                         <option value="">Select maid type</option>
                     <option value="New" <?php echo (isset($maid_prefill['maid_type']) && $maid_prefill['maid_type']=='New') ? 'selected' : ''; ?>>New</option>
                     <option value="Transfer" <?php echo (isset($maid_prefill['maid_type']) && $maid_prefill['maid_type']=='Transfer') ? 'selected' : ''; ?>>Transfer</option>
@@ -947,11 +1013,11 @@
                     <label class="form-label">Tuberculosis</label>
                     <div class="radio-group">
                         <div class="radio-item">
-                            <input type="radio" name="tuber" value="1" id="tuberculosis_yes" class="illness6">
+                            <input type="radio" name="tuberculosis" value="1" id="tuberculosis_yes" class="illness6">
                             <label for="tuberculosis_yes">Yes</label>
                         </div>
                         <div class="radio-item">
-                            <input type="radio" name="tuber" value="0" id="tuberculosis_no" class="illness6">
+                            <input type="radio" name="tuberculosis" value="0" id="tuberculosis_no" class="illness6">
                             <label for="tuberculosis_no">No</label>
                         </div>
 	                </div>
@@ -961,12 +1027,12 @@
                     <label class="form-label">Heart Disease</label>
                     <div class="radio-group">
                         <div class="radio-item">
-                            <input type="radio" name="heart" value="1" id="heart_yes" class="illness7">
-                            <label for="heart_yes">Yes</label>
+                            <input type="radio" name="heart_disease" value="1" id="heart_disease_yes" class="illness7">
+                            <label for="heart_disease_yes">Yes</label>
                         </div>
                         <div class="radio-item">
-                            <input type="radio" name="heart" value="0" id="heart_no" class="illness7">
-                            <label for="heart_no">No</label>
+                            <input type="radio" name="heart_disease" value="0" id="heart_disease_no" class="illness7">
+                            <label for="heart_disease_no">No</label>
                         </div>
                     </div>
 				</div>
@@ -1304,9 +1370,58 @@
                 </tbody>
             </table>
             
-            <!-- FDW Skills Section -->
+            <!-- Work Areas Section -->
             <div class="section-header">
-                <h3>🔧 FDW Skills (Based On FDW'S Declaration)</h3>
+                <h3>🏠 Work Areas</h3>
+                <p>General work areas and tasks the maid is willing to perform</p>
+            </div>
+            
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Willing</th>
+                        <th>Experience</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php 
+                    $work_area_tbl = $wpdb->prefix . "work_areas_master";
+                    $query = "SELECT * FROM `$work_area_tbl` AS wa ORDER BY `id`";
+                    $areas = $wpdb->get_results($query);
+
+                    if(!empty($areas)){
+                        foreach($areas as $area){ ?>
+                        <tr>
+                            <td class="task-name"><?php echo $area->lable; ?></td>
+                            <td>
+                                <select class="form-select" name="work_area[<?= $area->id; ?>][]" id="work_area_willing_<?= $area->id; ?>">
+                                    <option value="">Select option</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-select" name="work_area[<?= $area->id; ?>][]" id="work_area_exp_<?= $area->id; ?>">
+                                    <option value="">Select level</option>
+                                    <option value="Poor">Poor</option>
+                                    <option value="Fair">Fair</option>
+                                    <option value="Good">Good</option>
+                                    <option value="Very Good">Very Good</option>
+                                    <option value="N.A">N.A</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <?php 
+                        }
+                    }
+                    ?>
+                </tbody>
+            </table>
+            
+            <!-- MDW Skills Section -->
+            <div class="section-header">
+                <h3>🔧 MDW Skills (Based On MDW'S Declaration)</h3>
                 <p>Skills assessment based on maid's declaration</p>
             </div>
             
@@ -1315,7 +1430,7 @@
                     <div class="form-group" style="grid-column: 1 / -1;">
                         <div class="checkbox-item">
                             <input type="checkbox" name="fdw_declare" value="1" id="fdw_declare">
-                            <label for="fdw_declare">Based on Fdw's Declaration, No Evaluation/Observation by Singapore Ea or Overseas Training Centre/Ea</label>
+                            <label for="fdw_declare">Based on MDW's Declaration, No Evaluation/Observation by Singapore EA or Overseas Training Centre/EA</label>
                         </div>
 					</div>
 
@@ -1336,7 +1451,7 @@
                             </div>
                             <div class="checkbox-item">
                                 <input type="checkbox" name="fdw_interview[]" value="4" id="fdw_interview_4">
-                                <label for="fdw_interview_4">Interviewed in Person and Also Made Observation of Fdw in the Areas of Work Listed in Table</label>
+                                <label for="fdw_interview_4">Interviewed in Person and Also Made Observation of MDW in the Areas of Work Listed in Table</label>
                             </div>
                         </div>
 					</div>	
@@ -1353,16 +1468,9 @@
 					if(!empty($areas)){
 				    foreach($areas as $area){ ?>
                             <div class="form-group" style="grid-column: 1 / -1;">
-                                <div class="section-header" style="margin-bottom: 1rem;">
+                                <div class="section-header" style="">
                                     <h4><?php echo $area->lable; ?></h4>
                                 </div>
-                                
-                                <?php if($area->id != 2 && $area->id != 3 && $area->id != 4) { ?>
-                                <div class="form-group">
-                                    <label for="other_<?= $area->id; ?>" class="form-label">Other Details</label>
-                                    <input class="form-input" name="other_<?= $area->id; ?>" value="" id="other_<?= $area->id; ?>" maxlength="50" type="text" autocomplete="off" placeholder="Enter other details">
-					</div>
-                    <?php } ?>
                                 
                                 <div class="form-row">
                                     <div class="form-group">
@@ -1411,6 +1519,11 @@
                                     <input class="form-input" name="expe_year_<?= $area->id; ?>" value="" id="expe_year_<?= $area->id; ?>" maxlength="50" type="text" autocomplete="off" placeholder="Enter years of experience">
                                 </div>
                             </div>
+
+                                <div class="form-group">
+                                    <label for="other_<?= $area->id; ?>" class="form-label">Other Details</label>
+                                    <input class="form-input" name="other_<?= $area->id; ?>" value="" id="other_<?= $area->id; ?>" maxlength="50" type="text" autocomplete="off" placeholder="Enter other details">
+					</div>
 					<?php 
 					    }
 					} ?>    
@@ -1419,7 +1532,7 @@
             
             <!-- FDW Skills (Interviewed By Overseas Training Centre) -->
             <div class="section-header">
-                <h3>🏫 FDW Skills (Interviewed By Overseas Training Centre)</h3>
+                <h3>🏫 MDW Skills (Interviewed By Overseas Training Centre)</h3>
                 <p>Skills assessment by overseas training centre</p>
             </div>
             
@@ -1459,7 +1572,7 @@
                             </div>
                             <div class="checkbox-item">
                                 <input type="checkbox" name="tc_interview[]" value="4" id="tc_interview_4">
-                                <label for="tc_interview_4">Interviewed in Person and Also Made Observation of Fdw in the Areas of Work Listed in Table</label>
+                                <label for="tc_interview_4">Interviewed in Person and Also Made Observation of MDW in the Areas of Work Listed in Table</label>
                             </div>
                         </div>
 					</div>
@@ -1468,16 +1581,9 @@
 					if(!empty($areas)){
 				    foreach($areas as $area){ ?>
                             <div class="form-group" style="grid-column: 1 / -1;">
-                                <div class="section-header" style="margin-bottom: 1rem;">
+                                <div class="section-header" style="">
                                     <h4><?php echo $area->lable; ?></h4>
 					</div>
-                       
-                                <?php if($area->id != 2 && $area->id != 3 && $area->id != 4) { ?>
-                                <div class="form-group">
-                                    <label for="other_skill_<?= $area->id; ?>" class="form-label">Other Details</label>
-                                    <input class="form-input" name="other_skill_<?= $area->id; ?>" value="" id="other_skill_<?= $area->id; ?>" maxlength="50" type="text" autocomplete="off" placeholder="Enter other details">
-					</div>
-					<?php } ?>
 
                                 <div class="form-row">
                                     <div class="form-group">
@@ -1526,6 +1632,11 @@
                                     <input class="form-input" name="expe_year_skill_<?= $area->id; ?>" value="" id="expe_year_skill_<?= $area->id; ?>" maxlength="50" type="text" autocomplete="off" placeholder="Enter years of experience">
                                 </div>
                             </div>
+
+                                <div class="form-group">
+                                    <label for="other_skill_<?= $area->id; ?>" class="form-label">Other Details</label>
+                                    <input class="form-input" name="other_skill_<?= $area->id; ?>" value="" id="other_skill_<?= $area->id; ?>" maxlength="50" type="text" autocomplete="off" placeholder="Enter other details">
+					</div>
 					<?php 
 					    }
 					} ?>    
@@ -1582,7 +1693,7 @@
             
             <!-- Availability of FDW to Be Interviewed -->
             <div class="section-header">
-                <h3>📞 Availability of FDW to Be Interviewed by Prospective Employer</h3>
+                <h3>📞 Availability of MDW to Be Interviewed by Prospective Employer</h3>
                 <p>Interview availability options</p>
             </div>
             
@@ -1591,19 +1702,19 @@
                     <div class="checkbox-group">
                         <div class="checkbox-item">
                             <input type="checkbox" name="fdw_availability[]" value="1" id="fdw_availability_1">
-                            <label for="fdw_availability_1">FDW Is Not Available for Interview</label>
+                            <label for="fdw_availability_1">MDW Is Not Available for Interview</label>
 					</div>
                         <div class="checkbox-item">
                             <input type="checkbox" name="fdw_availability[]" value="2" id="fdw_availability_2">
-                            <label for="fdw_availability_2">FDW Can Be Interviewed by Phone</label>
+                            <label for="fdw_availability_2">MDW Can Be Interviewed by Phone</label>
 				</div>
                         <div class="checkbox-item">
                             <input type="checkbox" name="fdw_availability[]" value="3" id="fdw_availability_3">
-                            <label for="fdw_availability_3">FDW Can Be Interviewed by Video-conference</label>
+                            <label for="fdw_availability_3">MDW Can Be Interviewed by Video-conference</label>
             </div>
                         <div class="checkbox-item">
                             <input type="checkbox" name="fdw_availability[]" value="4" id="fdw_availability_4">
-                            <label for="fdw_availability_4">FDW Can Be Interviewed in Person</label>
+                            <label for="fdw_availability_4">MDW Can Be Interviewed in Person</label>
             </div>
             </div>
 			</div>
@@ -1672,12 +1783,19 @@
                 dateFormat: 'dd/mm/yy'
             });
 
-        // Initialize chosen select
-        jQuery(".stchosen").chosen({no_results_text: "Oops, nothing found!"});
+        // Initialize chosen select and force width & styles
+        jQuery(".stchosen").chosen({no_results_text: "Oops, nothing found!", width: "100%"});
 
         // Form validation and interactions
         initializeFormValidation();
         initializeFormInteractions();
+
+        // Enforce numeric contact number length (7-14 digits) on input
+        $('#contact_no').on('input', function(){
+            var val = this.value.replace(/[^0-9]/g, '');
+            if (val.length > 14) { val = val.slice(0,14); }
+            this.value = val;
+        });
     });
 
     // Navigation Functions
@@ -2376,8 +2494,8 @@
         jQuery('input[name="asthma"][value="0"]').prop('checked', true);
         jQuery('input[name="diabetas"][value="0"]').prop('checked', true);
         jQuery('input[name="hypertension"][value="0"]').prop('checked', true);
-        jQuery('input[name="tuber"][value="0"]').prop('checked', true);
-        jQuery('input[name="heart"][value="0"]').prop('checked', true);
+        jQuery('input[name="tuberculosis"][value="0"]').prop('checked', true);
+        jQuery('input[name="heart_disease"][value="0"]').prop('checked', true);
         jQuery('input[name="malaria"][value="0"]').prop('checked', true);
         jQuery('input[name="operation"][value="0"]').prop('checked', true);
 
@@ -2405,6 +2523,16 @@
         jQuery('#malay_spocken').val('Poor');
         jQuery('#cantonese_spocken').val('Poor');
         jQuery('#arabic_spocken').val('Poor');
+
+        // Work Areas - Fill with sample data
+        for (let i = 1; i <= 10; i++) { // Assuming up to 10 work areas
+            if (jQuery(`#work_area_willing_${i}`).length) {
+                jQuery(`#work_area_willing_${i}`).val('Yes');
+            }
+            if (jQuery(`#work_area_exp_${i}`).length) {
+                jQuery(`#work_area_exp_${i}`).val('Good');
+            }
+        }
 
         // FDW Skills Declaration
         jQuery('#fdw_declare').prop('checked', true);

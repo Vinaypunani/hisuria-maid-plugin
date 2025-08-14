@@ -424,8 +424,8 @@ function maids_HandleUploadFile()
 			$asthma = isset($_REQUEST['asthma']) ? sanitize_text_field($_REQUEST['asthma']) : '';
 			$diabetas = isset($_REQUEST['diabetas']) ? sanitize_text_field($_REQUEST['diabetas']) : '';
 			$hypertension = isset($_REQUEST['hypertension']) ? sanitize_text_field($_REQUEST['hypertension']) : '';
-			$tuber = isset($_REQUEST['tuber']) ? sanitize_text_field($_REQUEST['tuber']) : '';
-			$heart = isset($_REQUEST['heart']) ? sanitize_text_field($_REQUEST['heart']) : '';
+			$tuberculosis = isset($_REQUEST['tuberculosis']) ? sanitize_text_field($_REQUEST['tuberculosis']) : '';
+			$heart_disease = isset($_REQUEST['heart_disease']) ? sanitize_text_field($_REQUEST['heart_disease']) : '';
 			$malaria = isset($_REQUEST['malaria']) ? sanitize_text_field($_REQUEST['malaria']) : '';
 			$operation = isset($_REQUEST['operation']) ? sanitize_text_field($_REQUEST['operation']) : '';
 
@@ -508,8 +508,8 @@ function maids_HandleUploadFile()
                 	 'asthma' => $asthma,
                 	 'diabetas' => $diabetas,
                 	 'hypertension' => $hypertension,
-                	 'tuber' => $tuber,
-                	 'heart' => $heart,
+                	 'tuberculosis' => $tuberculosis,
+                	 'heart_disease' => $heart_disease,
                 	 'malaria' => $malaria,
                 	 'operation' => $operation,
                 	 'other_illness' => $other_illness,
@@ -555,41 +555,6 @@ function maids_HandleUploadFile()
                     }
                 }
                
-				// Handle employment history data
-				if(isset($_REQUEST['from_date']) && is_array($_REQUEST['from_date']) && count($_REQUEST['from_date'])>0){
-                    for ($i=0; $i < count($_REQUEST['from_date']); $i++) {
-
-						if(!empty($_REQUEST['from_date'][$i]) && !empty($_REQUEST['employer'][$i])){
-                             
-                            /*$from_date  = date('Y-m-d',strtotime(str_replace('/', '-', $_REQUEST["from_date"][$i])));
-                            $to_date = date('Y-m-d',strtotime(str_replace('/', '-', $_REQUEST["to_date"][$i])));
-                            $country = $_REQUEST['country'][$i];
-                            $employer = $_REQUEST['employer'][$i];
-                            $work_duties = $_REQUEST['work_duties'][$i];
-                            $remark = $_REQUEST['remark'][$i];*/
-
-
-							/*$from_date  =   isset($_REQUEST["from_date"][$i])&&$_REQUEST["from_date"][$i]!=''?date('Y-m-d',strtotime(str_replace('/', '-', $_REQUEST["from_date"][$i]))):null;
-							$to_date  =   isset($_REQUEST["to_date"][$i])&&$_REQUEST["to_date"][$i]!=''?date('Y-m-d',strtotime(str_replace('/', '-', $_REQUEST["to_date"][$i]))):null;*/
-							$from_date = isset($_REQUEST['from_date'][$i]) ? sanitize_text_field($_REQUEST['from_date'][$i]) : '';
-							$to_date = isset($_REQUEST['to_date'][$i]) ? sanitize_text_field($_REQUEST['to_date'][$i]) : '';
-
-							$country = isset($_REQUEST['country'][$i]) ? sanitize_text_field($_REQUEST['country'][$i]) : '';
-							$employer = isset($_REQUEST['employer'][$i]) ? sanitize_text_field($_REQUEST['employer'][$i]) : '';
-							$work_duties = isset($_REQUEST['work_duties'][$i]) ? sanitize_text_field($_REQUEST['work_duties'][$i]) : '';
-							$remark = isset($_REQUEST['remark_emp'][$i]) ? sanitize_text_field($_REQUEST['remark_emp'][$i]) : '';	
-
-
-                            if($from_date != "" || $employer != "") {
-                                $sql = "INSERT INTO `wp_employment_history`(`maid_id`, `from_date`, `to_date`, `country`, `employer`, `work_duties`, `remark`)  VALUES ('".$maidid."','".$from_date."','".$to_date."','".$country."','".$employer."','".$work_duties."','".$remark."')"; 
-                                    
-                                    $wpdb->get_results($sql);
-                                    $lastid = $wpdb->insert_id;
-		                    }
-
-						}
-					}
-				}
         
 				// Handle feedback data
 				if(isset($_REQUEST['feedback']) && is_array($_REQUEST['feedback']) && count($_REQUEST['feedback'])>0){
@@ -785,8 +750,8 @@ function maids_HandleUploadFile()
 			$asthma = isset($_REQUEST['asthma']) ? sanitize_text_field($_REQUEST['asthma']) : '';
 			$diabetas = isset($_REQUEST['diabetas']) ? sanitize_text_field($_REQUEST['diabetas']) : '';
 			$hypertension = isset($_REQUEST['hypertension']) ? sanitize_text_field($_REQUEST['hypertension']) : '';
-			$tuber = isset($_REQUEST['tuber']) ? sanitize_text_field($_REQUEST['tuber']) : '';
-			$heart = isset($_REQUEST['heart']) ? sanitize_text_field($_REQUEST['heart']) : '';
+			$tuberculosis = isset($_REQUEST['tuberculosis']) ? sanitize_text_field($_REQUEST['tuberculosis']) : '';
+			$heart_disease = isset($_REQUEST['heart_disease']) ? sanitize_text_field($_REQUEST['heart_disease']) : '';
 			$malaria = isset($_REQUEST['malaria']) ? sanitize_text_field($_REQUEST['malaria']) : '';
 			$operation = isset($_REQUEST['operation']) ? sanitize_text_field($_REQUEST['operation']) : '';
 			$other_illness = isset($_REQUEST['other_illness']) ? sanitize_text_field($_REQUEST['other_illness']) : '';
@@ -869,8 +834,8 @@ function maids_HandleUploadFile()
                 	 'asthma' => $asthma,
                 	 'diabetas' => $diabetas,
                 	 'hypertension' => $hypertension,
-                	 'tuber' => $tuber,
-                	 'heart' => $heart,
+                	 'tuberculosis' => $tuberculosis,
+                	 'heart_disease' => $heart_disease,
                 	 'malaria' => $malaria,
                 	 'operation' => $operation,
                 	 'other_illness' => $other_illness,
@@ -892,16 +857,38 @@ function maids_HandleUploadFile()
 
 			if (!empty($maidid)) {
 
-				// Handle work experience data
-                if(isset($_REQUEST['time_duration']) && is_array($_REQUEST['time_duration']) && !empty($_REQUEST['time_duration'])) {
+                // Handle work experience data
+                // Fallback: support JSON payload for dynamic fields similar to employment history
+                $we_payload_raw = isset($_REQUEST['work_experience_payload']) ? wp_unslash($_REQUEST['work_experience_payload']) : '';
+                if (!empty($we_payload_raw)) {
+                    $we_decoded = json_decode(stripslashes($we_payload_raw), true);
+                    if (is_array($we_decoded)) {
+                        $_REQUEST['time_duration'] = array();
+                        $_REQUEST['exp_employer_name'] = array();
+                        $_REQUEST['e_address'] = array();
+                        $_REQUEST['main_duties'] = array();
+                        $_REQUEST['exp_id'] = array();
+                        foreach ($we_decoded as $row_dec) {
+                            $_REQUEST['exp_id'][] = isset($row_dec['id']) ? $row_dec['id'] : '';
+                            $_REQUEST['time_duration'][] = isset($row_dec['time_duration']) ? $row_dec['time_duration'] : '';
+                            $_REQUEST['exp_employer_name'][] = isset($row_dec['employer_name']) ? $row_dec['employer_name'] : '';
+                            $_REQUEST['e_address'][] = isset($row_dec['e_address']) ? $row_dec['e_address'] : '';
+                            $_REQUEST['main_duties'][] = isset($row_dec['main_duties']) ? $row_dec['main_duties'] : '';
+                        }
+                        error_log('WORK EXPERIENCE DEBUG - Fallback JSON payload parsed and arrays populated.');
+                    }
+                }
+
+                if(isset($_REQUEST['time_duration']) && is_array($_REQUEST['time_duration'])) {
                     $exp_table = $wpdb->prefix . 'maid_experience';
-                    // Update existing rows by id when provided; insert new rows otherwise
+                    // Simplify: delete all and re-insert current set to ensure removed rows are purged
+                    $wpdb->query("DELETE FROM {$exp_table} WHERE maid_id = $maidid");
+
                     foreach($_REQUEST['time_duration'] as $i => $time_duration) {
                         $time_duration_val = isset($time_duration) ? sanitize_text_field($time_duration) : '';
                         $employer_name_val = isset($_REQUEST['exp_employer_name'][$i]) ? sanitize_text_field($_REQUEST['exp_employer_name'][$i]) : '';
                         $e_address_val     = isset($_REQUEST['e_address'][$i]) ? sanitize_textarea_field($_REQUEST['e_address'][$i]) : '';
                         $main_duties_val   = isset($_REQUEST['main_duties'][$i]) ? sanitize_textarea_field($_REQUEST['main_duties'][$i]) : '';
-                        $exp_id_val        = isset($_REQUEST['exp_id'][$i]) ? absint($_REQUEST['exp_id'][$i]) : 0;
 
                         if($time_duration_val !== '' || $employer_name_val !== '' || $e_address_val !== '' || $main_duties_val !== '') {
                             $exp_array = array(
@@ -911,63 +898,168 @@ function maids_HandleUploadFile()
                                 'e_address' => $e_address_val,
                                 'main_duties' => $main_duties_val
                             );
-                            if ($exp_id_val > 0) {
-                                // Try update existing
-                                $wpdb->update($exp_table, $exp_array, array('id' => $exp_id_val), array('%d','%s','%s','%s','%s'), array('%d'));
-                            } else {
-                                // Insert new
-                                $wpdb->insert($exp_table, $exp_array, array('%d', '%s', '%s', '%s', '%s'));
-                            }
-						}
-					}
-				}
+                            $wpdb->insert($exp_table, $exp_array, array('%d', '%s', '%s', '%s', '%s'));
+                        }
+                    }
+                }
                 
                
-				// Handle employment history data
-				if(isset($_REQUEST['from_date']) && is_array($_REQUEST['from_date']) && !empty($_REQUEST['from_date'])) {
-					// Delete existing records
-                    $wpdb->query("DELETE FROM wp_employment_history WHERE maid_id = $maidid");
+                // Handle employment history data
+				// Debug: Log raw employment history data from $_REQUEST
+				error_log('EMPLOYMENT HISTORY DEBUG - Raw $_REQUEST data:');
+				error_log('from_date: ' . (isset($_REQUEST['from_date']) ? print_r($_REQUEST['from_date'], true) : 'NOT SET'));
+				error_log('to_date: ' . (isset($_REQUEST['to_date']) ? print_r($_REQUEST['to_date'], true) : 'NOT SET'));
+				error_log('country: ' . (isset($_REQUEST['country']) ? print_r($_REQUEST['country'], true) : 'NOT SET'));
+				error_log('employer: ' . (isset($_REQUEST['employer']) ? print_r($_REQUEST['employer'], true) : 'NOT SET'));
+				error_log('work_duties: ' . (isset($_REQUEST['work_duties']) ? print_r($_REQUEST['work_duties'], true) : 'NOT SET'));
+				error_log('remark_emp: ' . (isset($_REQUEST['remark_emp']) ? print_r($_REQUEST['remark_emp'], true) : 'NOT SET'));
 
-					// Insert new records
+                // Fallback: If dynamic array inputs are not posted as arrays (reported issue),
+                // accept JSON payload from hidden field `employment_history_payload` and
+                // populate the expected array keys.
+                $eh_payload_raw = isset($_REQUEST['employment_history_payload']) ? wp_unslash($_REQUEST['employment_history_payload']) : '';
+                if(!empty($eh_payload_raw)){
+                    $eh_decoded = json_decode(stripslashes($eh_payload_raw), true);
+                    if(is_array($eh_decoded)){
+                        $from_list = array();
+                        $to_list = array();
+                        $country_list = array();
+                        $employer_list = array();
+                        $duties_list = array();
+                        $remark_list = array();
+                        foreach($eh_decoded as $row_dec){
+                            $from_list[]    = isset($row_dec['from_date']) ? (string)$row_dec['from_date'] : '';
+                            $to_list[]      = isset($row_dec['to_date']) ? (string)$row_dec['to_date'] : '';
+                            $country_list[] = isset($row_dec['country']) ? (string)$row_dec['country'] : '';
+                            $employer_list[]= isset($row_dec['employer']) ? (string)$row_dec['employer'] : '';
+                            $duties_list[]  = isset($row_dec['work_duties']) ? (string)$row_dec['work_duties'] : '';
+                            $remark_list[]  = isset($row_dec['remark']) ? (string)$row_dec['remark'] : '';
+                        }
+                        $_REQUEST['from_date']  = $from_list;
+                        $_REQUEST['to_date']    = $to_list;
+                        $_REQUEST['country']    = $country_list;
+                        $_REQUEST['employer']   = $employer_list;
+                        $_REQUEST['work_duties']= $duties_list;
+                        $_REQUEST['remark_emp'] = $remark_list;
+                        error_log('EMPLOYMENT HISTORY DEBUG - Fallback JSON payload parsed and arrays populated.');
+                    } else {
+                        error_log('EMPLOYMENT HISTORY DEBUG - Fallback JSON payload exists but failed to decode');
+                    }
+                }
+				
+				// Debug: Additional array length checks
+                if(isset($_REQUEST['from_date']) && is_array($_REQUEST['from_date'])) {
+					error_log('EMPLOYMENT HISTORY DEBUG - Array lengths:');
+					error_log('  from_date array length: ' . count($_REQUEST['from_date']));
+					error_log('  to_date array length: ' . (isset($_REQUEST['to_date']) && is_array($_REQUEST['to_date']) ? count($_REQUEST['to_date']) : 'NOT ARRAY'));
+					error_log('  country array length: ' . (isset($_REQUEST['country']) && is_array($_REQUEST['country']) ? count($_REQUEST['country']) : 'NOT ARRAY'));
+					error_log('  employer array length: ' . (isset($_REQUEST['employer']) && is_array($_REQUEST['employer']) ? count($_REQUEST['employer']) : 'NOT ARRAY'));
+					error_log('  work_duties array length: ' . (isset($_REQUEST['work_duties']) && is_array($_REQUEST['work_duties']) ? count($_REQUEST['work_duties']) : 'NOT ARRAY'));
+					error_log('  remark_emp array length: ' . (isset($_REQUEST['remark_emp']) && is_array($_REQUEST['remark_emp']) ? count($_REQUEST['remark_emp']) : 'NOT ARRAY'));
+				}
+				
+				if(isset($_REQUEST['from_date']) && is_array($_REQUEST['from_date'])) {
+					error_log('EMPLOYMENT HISTORY DEBUG - Processing employment history for maid_id: ' . $maidid);
+					error_log('EMPLOYMENT HISTORY DEBUG - Number of from_date entries: ' . count($_REQUEST['from_date']));
+					
+					// Delete existing records first
+					error_log('EMPLOYMENT HISTORY DEBUG - Deleting existing employment history records for maid_id: ' . $maidid);
+					$employment_table = $wpdb->prefix . 'employment_history';
+                    $delete_result = $wpdb->query("DELETE FROM {$employment_table} WHERE maid_id = $maidid");
+					error_log('EMPLOYMENT HISTORY DEBUG - Delete operation result: ' . ($delete_result !== false ? 'SUCCESS (rows affected: ' . $delete_result . ')' : 'FAILED - ' . $wpdb->last_error));
+
+					// Insert new records - only if there's meaningful data
 					foreach($_REQUEST['from_date'] as $i => $from_date) {
-						if(!empty($from_date) || !empty($_REQUEST['employer'][$i])) {
-                            $wpdb->insert(
-                                'wp_employment_history',
+						error_log('EMPLOYMENT HISTORY DEBUG - Processing record #' . ($i + 1));
+						
+						$from_date = sanitize_text_field($from_date);
+						$to_date = isset($_REQUEST['to_date'][$i]) ? sanitize_text_field($_REQUEST['to_date'][$i]) : '';
+						$country = isset($_REQUEST['country'][$i]) ? sanitize_text_field($_REQUEST['country'][$i]) : '';
+						$employer = isset($_REQUEST['employer'][$i]) ? sanitize_text_field($_REQUEST['employer'][$i]) : '';
+						$work_duties = isset($_REQUEST['work_duties'][$i]) ? sanitize_textarea_field($_REQUEST['work_duties'][$i]) : '';
+						$remark = isset($_REQUEST['remark_emp'][$i]) ? sanitize_textarea_field($_REQUEST['remark_emp'][$i]) : '';
+						
+						// Debug: Log the processed data for this record
+						error_log('EMPLOYMENT HISTORY DEBUG - Record #' . ($i + 1) . ' data after sanitization:');
+						error_log('  from_date: "' . $from_date . '"');
+						error_log('  to_date: "' . $to_date . '"');
+						error_log('  country: "' . $country . '"');
+						error_log('  employer: "' . $employer . '"');
+						error_log('  work_duties: "' . $work_duties . '"');
+						error_log('  remark: "' . $remark . '"');
+						
+						// Only insert if there's at least a from_date AND employer (both required)
+						error_log('EMPLOYMENT HISTORY DEBUG - Validation check for record #' . ($i + 1) . ': from_date="' . $from_date . '", employer="' . $employer . '"');
+						
+						if(!empty($from_date) && !empty($employer)) {
+							error_log('EMPLOYMENT HISTORY DEBUG - Record #' . ($i + 1) . ' passed validation, inserting into database');
+							
+                            $insert_result = $wpdb->insert(
+                                $employment_table,
                                 array(
                                     'maid_id' => $maidid,
-                                    'from_date' => sanitize_text_field($from_date),
-                                    'to_date' => isset($_REQUEST['to_date'][$i]) ? sanitize_text_field($_REQUEST['to_date'][$i]) : '',
-                                    'country' => isset($_REQUEST['country'][$i]) ? sanitize_text_field($_REQUEST['country'][$i]) : '',
-                                    'employer' => isset($_REQUEST['employer'][$i]) ? sanitize_text_field($_REQUEST['employer'][$i]) : '',
-                                    'work_duties' => isset($_REQUEST['work_duties'][$i]) ? sanitize_textarea_field($_REQUEST['work_duties'][$i]) : '',
-                                    'remark' => isset($_REQUEST['remark_emp'][$i]) ? sanitize_textarea_field($_REQUEST['remark_emp'][$i]) : ''
+                                    'from_date' => $from_date,
+                                    'to_date' => $to_date,
+                                    'country' => $country,
+                                    'employer' => $employer,
+                                    'work_duties' => $work_duties,
+                                    'remark' => $remark
                                 ),
                                 array('%d', '%s', '%s', '%s', '%s', '%s', '%s')
                             );
+							
+							// Debug: Log the result of the insert operation
+							if($insert_result !== false) {
+								$insert_id = $wpdb->insert_id;
+								error_log('EMPLOYMENT HISTORY DEBUG - Record #' . ($i + 1) . ' INSERT SUCCESS - New ID: ' . $insert_id);
+							} else {
+								error_log('EMPLOYMENT HISTORY DEBUG - Record #' . ($i + 1) . ' INSERT FAILED - Error: ' . $wpdb->last_error);
+								error_log('EMPLOYMENT HISTORY DEBUG - Last query: ' . $wpdb->last_query);
+							}
+						} else {
+							error_log('EMPLOYMENT HISTORY DEBUG - Record #' . ($i + 1) . ' SKIPPED - Failed validation (missing from_date or employer)');
 						}
 					}
+					error_log('EMPLOYMENT HISTORY DEBUG - Finished processing employment history for maid_id: ' . $maidid);
+				} else {
+					error_log('EMPLOYMENT HISTORY DEBUG - No employment history data found in $_REQUEST or from_date is not an array');
 				}
 
-				// Handle feedback data
-				if(isset($_REQUEST['feedback']) && is_array($_REQUEST['feedback']) && !empty($_REQUEST['feedback'])) {
-					// Delete existing records
-					$wpdb->query("DELETE FROM wp_maid_feedback WHERE maid_id = $maidid");
+                // Handle feedback data (Employment History in Singapore)
+                // Fallback: parse JSON payload if provided
+                $fb_payload_raw = isset($_REQUEST['feedback_payload']) ? wp_unslash($_REQUEST['feedback_payload']) : '';
+                if (!empty($fb_payload_raw)) {
+                    $fb_decoded = json_decode(stripslashes($fb_payload_raw), true);
+                    if (is_array($fb_decoded)) {
+                        $_REQUEST['employer_name'] = array();
+                        $_REQUEST['feedback'] = array();
+                        foreach ($fb_decoded as $row_dec) {
+                            $_REQUEST['employer_name'][] = isset($row_dec['employer_name']) ? $row_dec['employer_name'] : '';
+                            $_REQUEST['feedback'][] = isset($row_dec['feedback']) ? $row_dec['feedback'] : '';
+                        }
+                        error_log('FEEDBACK DEBUG - Fallback JSON payload parsed and arrays populated.');
+                    }
+                }
 
-					// Insert new records
-					foreach($_REQUEST['feedback'] as $i => $feedback) {
-						if(!empty($feedback) && !empty($_REQUEST['employer_name'][$i])) {
-							$wpdb->insert(
-								'wp_maid_feedback',
-								array(
-									'maid_id' => $maidid,
-									'employer_name' => sanitize_text_field($_REQUEST['employer_name'][$i]),
-									'feedback' => sanitize_textarea_field($feedback)
-								),
-								array('%d', '%s', '%s')
-							);
-						}
-					}
-				}    
+                // Always delete existing records first so removed cards are purged even when none are submitted
+                $wpdb->query("DELETE FROM wp_maid_feedback WHERE maid_id = $maidid");
+
+                // Insert new records if any
+                if(isset($_REQUEST['feedback']) && is_array($_REQUEST['feedback'])) {
+                    foreach($_REQUEST['feedback'] as $i => $feedback) {
+                        if(!empty($feedback) && !empty($_REQUEST['employer_name'][$i])) {
+                            $wpdb->insert(
+                                'wp_maid_feedback',
+                                array(
+                                    'maid_id' => $maidid,
+                                    'employer_name' => sanitize_text_field($_REQUEST['employer_name'][$i]),
+                                    'feedback' => sanitize_textarea_field($feedback)
+                                ),
+                                array('%d', '%s', '%s')
+                            );
+                        }
+                    }
+                }    
 				
 				$wpdb->query("DELETE FROM wp_maid_language_profiency WHERE maid_id = $maidid ");
 

@@ -150,8 +150,8 @@
 
 .remove-record-btn {
     position: absolute;
-    top: 16px;
-    right: 16px;
+    top: 8px;
+    right: 8px;
     width: 28px;
     height: 28px;
     border-radius: 50%;
@@ -164,6 +164,7 @@
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
+    z-index: 2;
 }
 
 .remove-record-btn:hover {
@@ -563,6 +564,7 @@
     padding: 24px;
     margin-bottom: 16px;
     transition: all 0.2s ease;
+    position: relative;
 }
 
 .feedback-card:hover {
@@ -1144,7 +1146,6 @@ div.illness {width: 124px;}
 .emp_work {margin-right : 10px;float:left;}
 div.emp_work {width: 50px;}
 
-#employment_history{border:none !important;}
 
 #passportlogo-fr{margin-top: 10px;
     margin-bottom: 30px;
@@ -1162,6 +1163,69 @@ input[readonly].passport_logo_fr{background: #fff;}
 }
 
 #wpfooter{display: none !important;}
+
+/* Modern Dynamic Sections */
+.dynamic-section {
+    position: relative;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+/* Add/Remove Buttons */
+.add-remove-container {
+    display: flex;
+    justify-content: flex-end;
+    margin: 1rem 0;
+}
+
+.add-btn {
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    font-size: 1.25rem;
+    font-weight: bold; 
+}
+
+.add-btn:hover {
+    background: #059669;
+    transform: scale(1.1);
+}
+
+.remove-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    font-size: 1rem;
+    font-weight: bold;
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+}
+
+.remove-btn:hover {
+    background: #dc2626;
+    transform: scale(1.1);
+}
 
 </style>
 <div class="wrap">
@@ -1248,10 +1312,10 @@ input[readonly].passport_logo_fr{background: #fff;}
 				<input class="form-input" name="education" value="<?php echo $row->education; ?>" id="education" maxlength="50" type="text" required placeholder="Enter education details">		
 			</div>
 
-			<div class="form-group">
-				<label class="form-label" for="contact_no">Contact Number <span class="required">*</span></label>
-				<input class="form-input" name="contact_no" value="<?php echo !empty($row->contact_no)?$row->contact_no:''; ?>" id="contact_no" maxlength="50" type="tel" autocomplete="nope" required placeholder="Enter contact number">			
-			</div>
+            <div class="form-group">
+                <label class="form-label" for="contact_no">Contact Number <span class="required">*</span></label>
+                <input class="form-input" name="contact_no" value="<?php echo !empty($row->contact_no)?$row->contact_no:''; ?>" id="contact_no" type="number" inputmode="numeric" step="1" min="1000000" max="99999999999999" required placeholder="Enter contact number (7-14 digits)">
+            </div>
 
 			<div class="form-group">
 				<label class="form-label" for="marrital_status">Marital Status <span class="required">*</span></label>
@@ -1444,12 +1508,12 @@ input[readonly].passport_logo_fr{background: #fff;}
                                 <label>Tuberculosis</label>
                                 <div class="medical-options">
                                     <div class="medical-option">
-                                        <input type="radio" name="tuber" value="1" id="tuber_yes" <?php if($row->tuber == 1) { echo "checked"; } ?> required>
-                                        <label for="tuber_yes">Yes</label>
+                                        <input type="radio" name="tuberculosis" value="1" id="tuberculosis_yes" <?php if($row->tuberculosis == 1) { echo "checked"; } ?> required>
+                                        <label for="tuberculosis_yes">Yes</label>
                                     </div>
                                     <div class="medical-option">
-                                        <input type="radio" name="tuber" value="0" id="tuber_no" <?php if($row->tuber == 0) { echo "checked"; } ?>>
-                                        <label for="tuber_no">No</label>
+                                        <input type="radio" name="tuberculosis" value="0" id="tuberculosis_no" <?php if($row->tuberculosis == 0) { echo "checked"; } ?>>
+                                        <label for="tuberculosis_no">No</label>
                                     </div>
                                 </div>
                             </div>
@@ -1458,12 +1522,12 @@ input[readonly].passport_logo_fr{background: #fff;}
                                 <label>Heart Disease</label>
                                 <div class="medical-options">
                                     <div class="medical-option">
-                                        <input type="radio" name="heart" value="1" id="heart_yes" <?php if($row->heart == 1) { echo "checked"; } ?> required>
-                                        <label for="heart_yes">Yes</label>
+                                        <input type="radio" name="heart_disease" value="1" id="heart_disease_yes" <?php if($row->heart_disease == 1) { echo "checked"; } ?> required>
+                                        <label for="heart_disease_yes">Yes</label>
                                     </div>
                                     <div class="medical-option">
-                                        <input type="radio" name="heart" value="0" id="heart_no" <?php if($row->heart == 0) { echo "checked"; } ?>>
-                                        <label for="heart_no">No</label>
+                                        <input type="radio" name="heart_disease" value="0" id="heart_disease_no" <?php if($row->heart_disease == 0) { echo "checked"; } ?>>
+                                        <label for="heart_disease_no">No</label>
                                     </div>
                                 </div>
                             </div>
@@ -1641,106 +1705,106 @@ input[readonly].passport_logo_fr{background: #fff;}
                         <span>+</span> Add Work Experience
                     </button>
                 </div>
+                <input type="hidden" name="work_experience_payload" id="work_experience_payload" value="">
             </div>
+
 
             <div class="section-header">
                 Employment History Overseas
             </div>
             <div class="section-content">
-                <div id="employment_history_container">
-                <?php 
-                $employment_history = $wpdb->get_results("SELECT * FROM wp_employment_history WHERE maid_id = $maidid" );
-            	$count_emp_hstry = $wpdb->num_rows;
-            	?>
-            	<input type="hidden" value="<?php echo $count_emp_hstry; ?>"
-            	name="count_emp_hstry" id="count_emp_hstry">
-            	<?php
-            	$i= 1;
-            	foreach ($employment_history as $emp) { 
-
-	                /*$from_date = '';
-	                $to_date = '';
-	               
-	                if($emp->from_date != '')
-	                {
-	                    $from_date = date('d/m/Y',strtotime($emp->from_date));
-	                }
-	                if($emp->to_date != '')
-	                {
-	                    $to_date = date('d/m/Y',strtotime($emp->to_date));
-	                }*/
-                ?>
-
-                    <div class="employment-record">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label" for="from_date<?php echo $i; ?>">From Date</label>
-                                <input class="form-input datepicker" name="from_date[]" value="<?php echo !empty($emp->from_date)?$emp->from_date:''; ?>" id="from_date<?php echo $i; ?>" type="text" placeholder="DD/MM/YYYY">
+                <div class="employment-history-section">
+                    <div id="employment_history_container">
+                        <?php 
+                        $employment_table = $wpdb->prefix . 'employment_history';
+                        $employment_rows = $wpdb->get_results("SELECT * FROM {$employment_table} WHERE maid_id = $maidid ORDER BY id ASC");
+                        $countries = array('SINGAPORE','MALAYSIA','INDONESIA','TAIWAN','HONG KONG','MIDDLE EAST','BRUNEI','INDIA','PHILIPPINES','MYANMAR','SRI LANKA','BANGLADESH','OTHERS');
+                        if(!empty($employment_rows)){
+                            foreach($employment_rows as $emp){ ?>
+                                <div class="employment-record">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label" for="from_date">From Date</label>
+                                            <input class="form-input emp-from" name="from_date[]" value="<?php echo esc_attr($emp->from_date); ?>" type="text" placeholder="DD/MM/YYYY">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" for="to_date">To Date</label>
+                                            <input class="form-input emp-to" name="to_date[]" value="<?php echo esc_attr($emp->to_date); ?>" type="text" placeholder="DD/MM/YYYY">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" for="country">Country</label>
+                                            <select class="form-select emp-country" name="country[]">
+                                                <option value="">Select country</option>
+                                                <?php foreach($countries as $c){ $sel = (strtoupper($emp->country) === $c) ? 'selected="selected"' : ''; ?>
+                                                    <option value="<?php echo esc_attr($c); ?>" <?php echo $sel; ?>><?php echo esc_html($c); ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>
+                                        <div class="form-group" style="grid-column: 1 / -1;">
+                                            <label class="form-label" for="employer">Employer</label>
+                                            <input class="form-input" name="employer[]" value="<?php echo esc_attr($emp->employer); ?>" type="text" placeholder="Enter employer name">
+                                        </div>
+                                        <div class="form-group" style="grid-column: 1 / -1;">
+                                            <label class="form-label" for="work_duties">Work Duties</label>
+                                            <textarea class="form-textarea" name="work_duties[]" rows="3" placeholder="Describe work duties"><?php echo esc_textarea($emp->work_duties); ?></textarea>
+                                        </div>
+                                        <div class="form-group" style="grid-column: 1 / -1;">
+                                            <label class="form-label" for="remark_emp">Remark</label>
+                                            <textarea class="form-textarea" name="remark_emp[]" rows="2" placeholder="Remark (optional)"><?php echo esc_textarea($emp->remark); ?></textarea>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="remove-record-btn" onclick="removeEmploymentHistory(this)">
+                                        <span>×</span>
+                                    </button>
+                                </div>
+                            <?php }
+                        } else { ?>
+                            <div class="employment-record">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label" for="from_date">From Date</label>
+                                        <input class="form-input emp-from" name="from_date[]" value="" type="text" placeholder="DD/MM/YYYY">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="to_date">To Date</label>
+                                        <input class="form-input emp-to" name="to_date[]" value="" type="text" placeholder="DD/MM/YYYY">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="country">Country</label>
+                                        <select class="form-select emp-country" name="country[]">
+                                            <option value="">Select country</option>
+                                            <?php foreach($countries as $c){ ?>
+                                                <option value="<?php echo esc_attr($c); ?>"><?php echo esc_html($c); ?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                    <div class="form-group" style="grid-column: 1 / -1;">
+                                        <label class="form-label" for="employer">Employer</label>
+                                        <input class="form-input" name="employer[]" value="" type="text" placeholder="Enter employer name">
+                                    </div>
+                                    <div class="form-group" style="grid-column: 1 / -1;">
+                                        <label class="form-label" for="work_duties">Work Duties</label>
+                                        <textarea class="form-textarea" name="work_duties[]" rows="3" placeholder="Describe work duties"></textarea>
+                                    </div>
+                                    <div class="form-group" style="grid-column: 1 / -1;">
+                                        <label class="form-label" for="remark_emp">Remark</label>
+                                        <textarea class="form-textarea" name="remark_emp[]" rows="2" placeholder="Remark (optional)"></textarea>
+                                    </div>
+                                </div>
+                                <button type="button" class="remove-record-btn" onclick="removeEmploymentHistory(this)">
+                                    <span>×</span>
+                                </button>
                             </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="to_date<?php echo $i; ?>">To Date</label>
-                                <input class="form-input datepicker" name="to_date[]" value="<?php echo !empty($emp->to_date)?$emp->to_date:''; ?>" id="to_date<?php echo $i; ?>" type="text" placeholder="DD/MM/YYYY">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="country<?php echo $i; ?>">Country</label>
-                                <select class="form-select" name="country[]" id="country<?php echo $i; ?>">
-                                    <option value="">Select country</option>
-                                    <?php
-                                    $countries = [
-                                        'Singapore',
-                                        'Malaysia',
-                                        'Indonesia',
-                                        'Taiwan',
-                                        'Hong Kong',
-                                        'Middle East',
-                                        'Brunei',
-                                        'India',
-                                        'Philippines',
-                                        'Myanmar',
-                                        'Sri Lanka',
-                                        'Bangladesh',
-                                        'Others'
-                                    ];
-                                    foreach ($countries as $country) {
-                                        $selected = (!empty($emp->country) && strtoupper($emp->country) == strtoupper($country)) ? 'selected' : '';
-                                        echo "<option value=\"" . strtoupper($country) . "\" $selected>" . strtoupper($country) . "</option>";
-                                    }
-                                    ?>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="employer<?php echo $i; ?>">Employer Name</label>
-                                <input class="form-input" name="employer[]" value="<?php echo !empty($emp->employer)?$emp->employer:''; ?>" id="employer<?php echo $i; ?>" type="text" placeholder="Enter employer name">
-                            </div>
-
-                            <div class="form-group" style="grid-column: 1 / -1;">
-                                <label class="form-label" for="work_duties<?php echo $i; ?>">Work Duties</label>
-                                <textarea class="form-textarea" name="work_duties[]" id="work_duties<?php echo $i; ?>" rows="3" placeholder="Describe work duties"><?php echo !empty($emp->work_duties)?$emp->work_duties:''; ?></textarea>
-                            </div>
-
-                            <div class="form-group" style="grid-column: 1 / -1;">
-                                <label class="form-label" for="remark_emp<?php echo $i; ?>">Remarks</label>
-                                <textarea class="form-textarea" name="remark_emp[]" id="remark_emp<?php echo $i; ?>" rows="3" placeholder="Enter any remarks"><?php echo !empty($emp->remark)?$emp->remark:''; ?></textarea>
-                            </div>
-                        </div>
-                        <?php if ($i > 1): ?>
-                        <button type="button" class="remove-record-btn" onclick="removeEmploymentRecord(this)">
-                            <span>×</span>
-                        </button>
-                        <?php endif; ?>
+                        <?php } ?>
                     </div>
-	            <?php $i++; } ?>
-	        </div>
-                <div class="add-record-btn-container">
-                    <button type="button" class="add-record-btn" onclick="add_employment_history()">
-                        <span>+</span> Add Employment Record
-                    </button>
+                    <div class="add-record-btn-container">
+                        <button type="button" class="add-record-btn" onclick="add_employment_history()">
+                            <span>+</span> Add Employment
+                        </button>
+                    </div>
+                    <input type="hidden" name="employment_history_payload" id="employment_history_payload" value="">
                 </div>
             </div>
-
 
             <div class="section-header">
                 Language Proficiency
@@ -1873,13 +1937,13 @@ input[readonly].passport_logo_fr{background: #fff;}
             </div>
 
             <div class="section-header">
-                FDW Skills (Based On FDW's Declaration)
+                                    MDW Skills (Based On MDW's Declaration)
             </div>
             <div class="section-content">
                 <div class="fdw-skills-container">
                     <div class="fdw-declaration">
                         <input type="checkbox" name="fdw_declare" value="1" <?php if($row->fdw_declare == 1) { echo 'checked'; } ?>>
-                        <span>Based on FDW's Declaration, No Evaluation/Observation by Singapore EA or Overseas Training Centre/EA</span>
+                        <span>Based on MDW's Declaration, No Evaluation/Observation by Singapore EA or Overseas Training Centre/EA</span>
                     </div>
 
                     <?php 
@@ -1903,7 +1967,7 @@ input[readonly].passport_logo_fr{background: #fff;}
                             </div>
                             <div class="fdw-interview-option">
                                 <input type="checkbox" name="fdw_interview[]" value="4" <?php if(in_array(4,$fdw_interview)) { echo 'checked'; } ?>>
-                                <span>Interviewed in Person and Also Made Observation of FDW in the Areas of Work Listed in Table</span>
+                                <span>Interviewed in Person and Also Made Observation of MDW in the Areas of Work Listed in Table</span>
                             </div>
                         </div>
                     </div>
@@ -1923,15 +1987,6 @@ input[readonly].passport_logo_fr{background: #fff;}
                     ?>
                     <div class="fdw-skill-card">
                         <div class="skill-label"><?php echo $area->lable; ?></div>
-                        
-                        <?php if($area->id != 2 && $area->id != 3 && $area->id != 4) { ?>
-                        <div class="skill-section">
-                            <div class="skill-field">
-                                <label class="skill-field-label">Other Details</label>
-                                <input class="skill-input" type="text" name="other_<?= $area->id; ?>" value="<?php if(!empty($work_row->other)){ echo $work_row->other;} ?>" id="other_<?= $area->id; ?>" maxlength="50" placeholder="Enter other details">
-                            </div>
-                        </div>
-                        <?php } ?>
 
                         <div class="skill-section">
                             <div class="skill-field">
@@ -1979,12 +2034,18 @@ input[readonly].passport_logo_fr{background: #fff;}
                                 <label class="skill-field-label">Experience Year</label>
                                 <input class="skill-input" type="text" name="expe_year_<?= $area->id; ?>" value="<?php if(!empty($work_row->exp_year)){ echo $work_row->exp_year;} ?>" id="expe_year_<?= $area->id; ?>" maxlength="50" placeholder="Enter years of experience">
                             </div>
+
                             <?php } else { ?>
                             <div class="skill-field" id="exp_year_<?= $area->id; ?>" style="display:none;">
                                 <label class="skill-field-label">Experience Year</label>
                                 <input class="skill-input" type="text" name="expe_year_<?= $area->id; ?>" value="" id="expe_year_<?= $area->id; ?>" maxlength="50" placeholder="Enter years of experience">
                             </div>
                             <?php } ?>
+
+                            <div class="skill-field">
+                                <label class="skill-field-label">Other Details</label>
+                                <input class="skill-input" type="text" name="other_<?= $area->id; ?>" value="<?php if(!empty($work_row->other)){ echo $work_row->other;} ?>" id="other_<?= $area->id; ?>" maxlength="50" placeholder="Enter other details">
+                            </div>
                         </div>
                     </div>
                     <?php 
@@ -2000,11 +2061,11 @@ input[readonly].passport_logo_fr{background: #fff;}
         </br>
 
         <div style="width: 98%;" class="personalheading">
-                 Fdw Skills (Interviewed By Overseas Training Centre)
+                 MDW Skills (Interviewed By Overseas Training Centre)
         </div>
 
             <div class="section-header">
-                FDW Skills (Interviewed By Overseas Training Centre)
+                MDW Skills (Interviewed By Overseas Training Centre)
             </div>
             <div class="section-content">
                 <div class="fdw-skills-container">
@@ -2046,7 +2107,7 @@ input[readonly].passport_logo_fr{background: #fff;}
                             </div>
                             <div class="fdw-interview-option">
                                 <input type="checkbox" name="tc_interview[]" value="4" <?php if(in_array(4,$tc_intv)) { echo "checked"; } ?>>
-                                <span>Interviewed in Person and Also Made Observation of FDW in the Areas of Work Listed in Table</span>
+                                <span>Interviewed in Person and Also Made Observation of MDW in the Areas of Work Listed in Table</span>
                             </div>
                         </div>
                     </div>
@@ -2065,15 +2126,6 @@ input[readonly].passport_logo_fr{background: #fff;}
                     ?>
                     <div class="fdw-skill-card">
                         <div class="skill-label"><?php echo $area->lable; ?></div>
-                        
-                        <?php if($area->id != 2 && $area->id != 3 && $area->id != 4) { ?>
-                        <div class="skill-section">
-                            <div class="skill-field">
-                                <label class="skill-field-label">Other Details</label>
-                                <input class="skill-input" type="text" name="other_skill_<?= $area->id; ?>" value="<?php if(!empty($work_row->other)){ echo $work_row->other;} ?>" id="other_skill_<?= $area->id; ?>" maxlength="50" placeholder="Enter other details">
-                            </div>
-                        </div>
-                        <?php } ?>
 
                         <div class="skill-section">
                             <div class="skill-field">
@@ -2127,6 +2179,11 @@ input[readonly].passport_logo_fr{background: #fff;}
                                 <input class="skill-input" type="text" name="expe_year_skill_<?= $area->id; ?>" value="" id="expe_year_skill_<?= $area->id; ?>" maxlength="50" placeholder="Enter years of experience">
                             </div>
                             <?php } ?>
+
+                            <div class="skill-field">
+                                <label class="skill-field-label">Other Details</label>
+                                <input class="skill-input" type="text" name="other_skill_<?= $area->id; ?>" value="<?php if(!empty($work_row->other)){ echo $work_row->other;} ?>" id="other_skill_<?= $area->id; ?>" maxlength="50" placeholder="Enter other details">
+                            </div>
                         </div>
                     </div>
                     <?php 
@@ -2162,6 +2219,9 @@ input[readonly].passport_logo_fr{background: #fff;}
                         foreach ($maid_feedback as $feedback) { 
                         ?>
                         <div class="feedback-card">
+                            <button type="button" class="remove-record-btn" onclick="removeFeedback(this)">
+                                <span>×</span>
+                            </button>
                             <div class="feedback-field">
                                 <label class="feedback-label" for="employer_name">Name of Employer</label>
                                 <input class="feedback-input" name="employer_name[]" value="<?php echo !empty($feedback->employer_name)?$feedback->employer_name:''; ?>" id="employer_name" maxlength="50" type="text" placeholder="Enter employer name" autocomplete="nope">
@@ -2178,11 +2238,12 @@ input[readonly].passport_logo_fr{background: #fff;}
                             <span>+</span> Add Feedback
                         </button>
                     </div>
+                    <input type="hidden" name="feedback_payload" id="feedback_payload" value="">
                 </div>
             </div>
 
             <div class="section-header">
-                Availability of FDW to Be Interviewed
+                Availability of MDW to Be Interviewed
             </div>
             <div class="section-content">
                 <div class="availability-section">
@@ -2190,19 +2251,19 @@ input[readonly].passport_logo_fr{background: #fff;}
                     <div class="availability-options">
                         <div class="availability-option">
                             <input type="checkbox" name="fdw_availability[]" value="1" id="fdw_not_available" <?php if(in_array(1,$fdw_availability)) { echo 'checked'; } ?>>
-                            <label for="fdw_not_available">FDW Is Not Available for Interview</label>
+                            <label for="fdw_not_available">MDW Is Not Available for Interview</label>
                         </div>
                         <div class="availability-option">
                             <input type="checkbox" name="fdw_availability[]" value="2" id="fdw_phone" <?php if(in_array(2,$fdw_availability)) { echo 'checked'; } ?>>
-                            <label for="fdw_phone">FDW Can Be Interviewed by Phone</label>
+                            <label for="fdw_phone">MDW Can Be Interviewed by Phone</label>
                         </div>
                         <div class="availability-option">
                             <input type="checkbox" name="fdw_availability[]" value="3" id="fdw_video" <?php if(in_array(3,$fdw_availability)) { echo 'checked'; } ?>>
-                            <label for="fdw_video">FDW Can Be Interviewed by Video-conference</label>
+                            <label for="fdw_video">MDW Can Be Interviewed by Video-conference</label>
                         </div>
                         <div class="availability-option">
                             <input type="checkbox" name="fdw_availability[]" value="4" id="fdw_person" <?php if(in_array(4,$fdw_availability)) { echo 'checked'; } ?>>
-                            <label for="fdw_person">FDW Can Be Interviewed in Person</label>
+                            <label for="fdw_person">MDW Can Be Interviewed in Person</label>
                         </div>
                     </div>
                 </div>
@@ -2408,6 +2469,13 @@ input[readonly].passport_logo_fr{background: #fff;}
 			});
 
 			jQuery(".stchosen").chosen({no_results_text: "Oops, nothing found!"});
+
+			// Enforce numeric contact number length (7-14 digits) on input
+			jQuery('#contact_no').on('input', function(){
+				var val = this.value.replace(/[^0-9]/g, '');
+				if (val.length > 14) { val = val.slice(0,14); }
+				this.value = val;
+			});
 			setTimeout(function(){ jQuery('.stchosen').trigger("chosen:updated"); }, 3000);
 			
 			/* Repeter text box for specialities */
@@ -2505,59 +2573,6 @@ input[readonly].passport_logo_fr{background: #fff;}
             '<option value="BANGLADESH">BANGLADESH</option>'+
             '<option value="OTHERS">OTHERS</option>';
 
-        function add_employment_history()
-        {
-            var nextIndex = jQuery('#employment_history_container .employment-record').length + 1;
-            var html = ''+
-            '<div class="employment-record">'+
-                '<div class="form-grid">'+
-                    '<div class="form-group">'+
-                        '<label class="form-label" for="from_date'+nextIndex+'">From Date</label>'+
-                        '<input class="form-input datepicker" name="from_date[]" id="from_date'+nextIndex+'" type="text" placeholder="DD/MM/YYYY">'+
-                    '</div>'+
-                    '<div class="form-group">'+
-                        '<label class="form-label" for="to_date'+nextIndex+'">To Date</label>'+
-                        '<input class="form-input datepicker" name="to_date[]" id="to_date'+nextIndex+'" type="text" placeholder="DD/MM/YYYY">'+
-                    '</div>'+
-                    '<div class="form-group">'+
-                        '<label class="form-label" for="country'+nextIndex+'">Country</label>'+
-                        '<select class="form-select" name="country[]" id="country'+nextIndex+'">'+countryOptions+'</select>'+
-                    '</div>'+
-                    '<div class="form-group">'+
-                        '<label class="form-label" for="employer'+nextIndex+'">Employer Name</label>'+
-                        '<input class="form-input" name="employer[]" id="employer'+nextIndex+'" type="text" placeholder="Enter employer name">'+
-                    '</div>'+
-                    '<div class="form-group" style="grid-column: 1 / -1;">'+
-                        '<label class="form-label" for="work_duties'+nextIndex+'">Work Duties</label>'+
-                        '<textarea class="form-textarea" name="work_duties[]" id="work_duties'+nextIndex+'" rows="3" placeholder="Describe work duties"></textarea>'+
-                    '</div>'+
-                    '<div class="form-group" style="grid-column: 1 / -1;">'+
-                        '<label class="form-label" for="remark_emp'+nextIndex+'">Remarks</label>'+
-                        '<textarea class="form-textarea" name="remark_emp[]" id="remark_emp'+nextIndex+'" rows="3" placeholder="Enter any remarks"></textarea>'+
-                    '</div>'+
-                '</div>'+
-                '<button type="button" class="remove-record-btn" onclick="removeEmploymentRecord(this)"><span>×</span></button>'+
-            '</div>';
-
-            jQuery('#employment_history_container').append(html);
-            initEmploymentDatepickers('#employment_history_container');
-        }
-
-        function removeEmploymentRecord(button){
-            jQuery(button).closest('.employment-record').remove();
-        }
-
-        function initEmploymentDatepickers(context){
-            var $ctx = jQuery(context || document);
-            $ctx.find('.datepicker').datepicker({
-                autoclose: true,
-                changeMonth: true,
-                changeYear: true,
-                maxDate: 'today',
-                yearRange: '-100:+00',
-                dateFormat: 'dd/mm/yy'
-            });
-        }
 
 		jQuery("#marrital_status").change(function(){
 			if(this.value == 1)
@@ -2584,6 +2599,145 @@ input[readonly].passport_logo_fr{background: #fff;}
 			{
 				jQuery("#other_food_input").hide();
 				jQuery("#other_food_input input[name='other_food']").val(''); // Clear the input when hidden
+			}
+		});
+	</script>
+	<script type="text/javascript">
+		function initEmploymentDatepickers(scope){
+			jQuery(scope).find('.emp-from, .emp-to').each(function(){
+				jQuery(this).datepicker({
+					autoclose: true,
+					changeMonth: true,
+					changeYear: true,
+					maxDate: "today",
+					yearRange: "-100:+00",
+					dateFormat: 'dd/mm/yy'
+				});
+			});
+		}
+
+		function add_employment_history(){
+			var countries = [
+				'SINGAPORE','MALAYSIA','INDONESIA','TAIWAN','HONG KONG','MIDDLE EAST','BRUNEI','INDIA','PHILIPPINES','MYANMAR','SRI LANKA','BANGLADESH','OTHERS'
+			];
+			var countryOptions = '<option value="">Select country<\/option>';
+			for(var i=0;i<countries.length;i++){
+				countryOptions += '<option value="'+countries[i]+'">'+countries[i]+'<\/option>';
+			}
+			var tpl = ''+
+			'<div class="employment-record">'+
+			'  <div class="form-grid">'+
+			'    <div class="form-group">'+
+			'      <label class="form-label" for="from_date">From Date<\/label>'+
+			'      <input class="form-input emp-from" name="from_date[]" type="text" placeholder="DD/MM/YYYY">'+
+			'    <\/div>'+
+			'    <div class="form-group">'+
+			'      <label class="form-label" for="to_date">To Date<\/label>'+
+			'      <input class="form-input emp-to" name="to_date[]" type="text" placeholder="DD/MM/YYYY">'+
+			'    <\/div>'+
+			'    <div class="form-group">'+
+			'      <label class="form-label" for="country">Country<\/label>'+
+			'      <select class="form-select emp-country" name="country[]">'+countryOptions+'<\/select>'+
+			'    <\/div>'+
+			'    <div class="form-group" style="grid-column: 1 / -1;">'+
+			'      <label class="form-label" for="employer">Employer<\/label>'+
+			'      <input class="form-input" name="employer[]" type="text" placeholder="Enter employer name">'+
+			'    <\/div>'+
+			'    <div class="form-group" style="grid-column: 1 / -1;">'+
+			'      <label class="form-label" for="work_duties">Work Duties<\/label>'+
+			'      <textarea class="form-textarea" name="work_duties[]" rows="3" placeholder="Describe work duties"><\/textarea>'+
+			'    <\/div>'+
+			'    <div class="form-group" style="grid-column: 1 / -1;">'+
+			'      <label class="form-label" for="remark_emp">Remark<\/label>'+
+			'      <textarea class="form-textarea" name="remark_emp[]" rows="2" placeholder="Remark (optional)"><\/textarea>'+
+			'    <\/div>'+
+			'  <\/div>'+
+			'  <button type="button" class="remove-record-btn" onclick="removeEmploymentHistory(this)"><span>×<\/span><\/button>'+
+			'<\/div>';
+
+			var $node = jQuery(tpl);
+			jQuery('#employment_history_container').append($node);
+			initEmploymentDatepickers($node);
+		}
+
+		function removeEmploymentHistory(btn){
+			jQuery(btn).closest('.employment-record').remove();
+		}
+
+		// Before submit, serialize Employment History into a JSON fallback payload
+		jQuery(document).on('submit', '#maidedit', function(){
+			var data = [];
+			jQuery('#employment_history_container .employment-record').each(function(){
+				var $rec = jQuery(this);
+				var row = {
+					from_date: $rec.find('input[name="from_date[]"]').val() || '',
+					to_date: $rec.find('input[name="to_date[]"]').val() || '',
+					country: $rec.find('select[name="country[]"]').val() || '',
+					employer: $rec.find('input[name="employer[]"]').val() || '',
+					work_duties: $rec.find('textarea[name="work_duties[]"]').val() || '',
+					remark: $rec.find('textarea[name="remark_emp[]"]').val() || ''
+				};
+				// Include rows with any meaningful content
+				if (row.from_date || row.to_date || row.country || row.employer || row.work_duties || row.remark){
+					data.push(row);
+				}
+			});
+			jQuery('#employment_history_payload').val(JSON.stringify(data));
+			// Also normalize the static array inputs count to match the JSON, in case
+			// the browser posts only last row. We clear and rebuild hidden mirrors.
+			var $mirror = jQuery('<div style="display:none" id="eh-mirror"></div>');
+			jQuery(this).append($mirror);
+			for (var i=0;i<data.length;i++){
+				$mirror.append('<input name="from_date[]" value="'+(data[i].from_date||'')+'" />');
+				$mirror.append('<input name="to_date[]" value="'+(data[i].to_date||'')+'" />');
+				$mirror.append('<input name="country[]" value="'+(data[i].country||'')+'" />');
+				$mirror.append('<input name="employer[]" value="'+(data[i].employer||'')+'" />');
+				$mirror.append('<textarea name="work_duties[]">'+(data[i].work_duties||'')+'<\/textarea>');
+				$mirror.append('<textarea name="remark_emp[]">'+(data[i].remark||'')+'<\/textarea>');
+			}
+
+			// Build Work Experience payload and hidden mirrors (similar to employment history)
+			var weData = [];
+			jQuery('#work_experience_container .employment-record').each(function(){
+				var $rec = jQuery(this);
+				var row = {
+					id: $rec.find('input[name="exp_id[]"]').val() || '',
+					time_duration: $rec.find('input[name="time_duration[]"]').val() || '',
+					employer_name: $rec.find('input[name="exp_employer_name[]"]').val() || '',
+					e_address: $rec.find('textarea[name="e_address[]"]').val() || '',
+					main_duties: $rec.find('textarea[name="main_duties[]"]').val() || ''
+				};
+				if (row.time_duration || row.employer_name || row.e_address || row.main_duties){
+					weData.push(row);
+				}
+			});
+			jQuery('#work_experience_payload').val(JSON.stringify(weData));
+			var $weMirror = jQuery('<div style="display:none" id="we-mirror"></div>');
+			jQuery(this).append($weMirror);
+			for (var j=0;j<weData.length;j++){
+				$weMirror.append('<input name="exp_id[]" value="'+(weData[j].id||'')+'" />');
+				$weMirror.append('<input name="time_duration[]" value="'+(weData[j].time_duration||'')+'" />');
+				$weMirror.append('<input name="exp_employer_name[]" value="'+(weData[j].employer_name||'')+'" />');
+				$weMirror.append('<textarea name="e_address[]">'+(weData[j].e_address||'')+'<\/textarea>');
+				$weMirror.append('<textarea name="main_duties[]">'+(weData[j].main_duties||'')+'<\/textarea>');
+			}
+
+			// Build Feedback (Employment History in Singapore) payload + mirror
+			var fbData = [];
+			jQuery('#feedback_container .feedback-card').each(function(){
+				var $rec = jQuery(this);
+				var r = {
+					employer_name: $rec.find('input[name="employer_name[]"]').val() || '',
+					feedback: $rec.find('textarea[name="feedback[]"]').val() || ''
+				};
+				if (r.employer_name || r.feedback){ fbData.push(r); }
+			});
+			jQuery('#feedback_payload').val(JSON.stringify(fbData));
+			var $fbMirror = jQuery('<div style="display:none" id="fb-mirror"></div>');
+			jQuery(this).append($fbMirror);
+			for (var k=0;k<fbData.length;k++){
+				$fbMirror.append('<input name="employer_name[]" value="'+(fbData[k].employer_name||'')+'" />');
+				$fbMirror.append('<textarea name="feedback[]">'+(fbData[k].feedback||'')+'<\/textarea>');
 			}
 		});
 	</script>

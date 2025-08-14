@@ -401,19 +401,19 @@ div.emp_work {width: 50px;}
 
                 <div class="control-wrap" id="">
 					
-	                <?php $tuber=($row->tuber == 1)? 'Yes':'No'; ?>
+	                <?php $tuberculosis=($row->tuberculosis == 1)? 'Yes':'No'; ?>
 	                <table>
 						<th>TUBERCULOSIS:</th>
-						<td> <?php echo $tuber; ?></td>
+						<td> <?php echo $tuberculosis; ?></td>
 					</table>
                 </div>
 
                 <div class="control-wrap" id="">
 					
-	                  <?php $heart=($row->heart == 1)? 'Yes':'No'; ?>
+	                  <?php $heart_disease=($row->heart_disease == 1)? 'Yes':'No'; ?>
 	                <table>
-						<th>HEART DISEAS:</th>
-						<td> <?php echo $heart; ?></td>
+						<th>HEART DISEASE:</th>
+						<td> <?php echo $heart_disease; ?></td>
 					</table>
                 </div>
 
