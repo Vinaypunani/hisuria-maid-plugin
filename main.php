@@ -171,6 +171,22 @@ function maids_add_to_menu()
 	add_menu_page('Maids', 'Maids', 'edit_posts', 'maid', 'maids_admin','dashicons-groups',25);
 	add_submenu_page( 'maid', 'Add New Maid', 'Add New Maids', 'edit_posts', 'addmaid','maid_add_page');
 	//add_submenu_page( 'maid', 'Maids Categories', 'Maids Categories', 'manage_options', 'maid_cat','maid_cat_page');
+
+	// Tools: add a helper to add Care of pets skill into DB
+	add_management_page(
+		'Add DB Field: Care of pets',
+		'Add Care of pets Skill',
+		'manage_options',
+		'add-care-of-pets-skill',
+		'maids_tool_add_care_pets_page'
+	);
+	add_management_page(
+		'Add DB Field: Spectacles (spec)',
+		'Add Spectacles Field',
+		'manage_options',
+		'add-spec-column',
+		'maids_tool_add_spec_column_page'
+	);
 }
 
 function maid_add_page()
@@ -450,6 +466,12 @@ function maids_HandleUploadFile()
             } else {
                 $care_pets = '';
             }
+            // Spectacles (glasses) boolean
+            $spec = 0;
+            if (isset($_REQUEST['spec'])) {
+                $val = strtolower( trim( (string) $_REQUEST['spec'] ) );
+                $spec = in_array($val, array('1','yes','true'), true) ? 1 : 0;
+            }
             
             $pevious_work_exp = isset($_REQUEST['exp']) ? sanitize_text_field($_REQUEST['exp']) : '';
 			$rest_day = isset($_REQUEST['rest_day']) ? sanitize_text_field($_REQUEST['rest_day']) : '';
@@ -502,6 +524,7 @@ function maids_HandleUploadFile()
                 	 'diet' => $diet,
                      'food_preferences' => $food_preferences,
                      'care_pets' => $care_pets,
+                     'spec' => $spec,
                 	 'other_food' => $other_food,
                 	 'mental_illness' => $mental_illness,
                 	 'epilepsy' => $epilepsy,
@@ -617,9 +640,24 @@ function maids_HandleUploadFile()
 				
 
                 $work_area_tbl = "wp_maid_skill_master";
-				$query = "SELECT * FROM `$work_area_tbl` ORDER BY `id`";
-				$areas = $wpdb->get_results($query);
-				$count = $wpdb->num_rows;
+                // Ensure 'Care of pets' skill exists in master
+                $care_label = 'Care of pets';
+                $existing_care = $wpdb->get_row($wpdb->prepare("SELECT id FROM `$work_area_tbl` WHERE LOWER(lable) = LOWER(%s) LIMIT 1", $care_label));
+                if (!$existing_care) {
+                    $wpdb->insert($work_area_tbl, array('lable' => $care_label), array('%s'));
+                }
+                $query = "SELECT * FROM `$work_area_tbl` ORDER BY `id`";
+                $areas = $wpdb->get_results($query);
+                $count = $wpdb->num_rows;
+
+                // Build list of JSON-only skills (language abilities, other skills, care of pets)
+                $json_only_skill_ids = array();
+                foreach ((array)$areas as $a_row) {
+                    $label_low = strtolower((string)$a_row->lable);
+                    if (strpos($label_low, 'language') !== false || strpos($label_low, 'other skills') !== false || strpos($label_low, 'care of pets') !== false) {
+                        $json_only_skill_ids[] = (int)$a_row->id;
+                    }
+                }
                 
 				for($i=1; $i<= $count; $i++){
 					$skill_id = $i;
@@ -635,6 +673,18 @@ function maids_HandleUploadFile()
 					$experience = isset($_REQUEST['experience_'.$i]) ? $_REQUEST['experience_'.$i] : '';
 					$exp_year = isset($_REQUEST['expe_year_'.$i]) ? $_REQUEST['expe_year_'.$i] : '';
 					$assessment = isset($_REQUEST['skill_area_'.$i]) ? $_REQUEST['skill_area_'.$i] : '';
+
+					// Fallback: ensure $json_only_skill_ids is available even if earlier block didn't run
+					if (!isset($json_only_skill_ids) || !is_array($json_only_skill_ids)) {
+						$json_only_skill_ids = array();
+						$areas_fallback = $wpdb->get_results("SELECT id, lable FROM wp_maid_skill_master");
+						foreach ((array)$areas_fallback as $a_row_fb) {
+							$lbl = strtolower((string)$a_row_fb->lable);
+							if (strpos($lbl, 'language') !== false || strpos($lbl, 'other skills') !== false || strpos($lbl, 'care of pets') !== false) {
+								$json_only_skill_ids[] = (int)$a_row_fb->id;
+							}
+						}
+					}
                    
 
 						/*$skill_array = array(
@@ -730,6 +780,13 @@ function maids_HandleUploadFile()
 			$certified_no = isset($_REQUEST['certified_no']) ? sanitize_text_field($_REQUEST['certified_no']) : '';
 
             $passport_logo_fr = isset($_REQUEST['passport_logo_fr']) ? $_REQUEST['passport_logo_fr'] : '';
+
+            // Spectacles (glasses) boolean on update
+            $spec = 0;
+            if (isset($_REQUEST['spec'])) {
+                $val = strtolower( trim( (string) $_REQUEST['spec'] ) );
+                $spec = in_array($val, array('1','yes','true'), true) ? 1 : 0;
+            }
 			
 
 			$tc_inew = $_REQUEST['tc_interview'];
@@ -828,6 +885,7 @@ function maids_HandleUploadFile()
                 	 'diet' => $diet,
                      'food_preferences' => $food_preferences,
                      'care_pets' => $care_pets,
+                     'spec' => $spec,
                 	 'other_food' => $other_food,
                 	 'mental_illness' => $mental_illness,
                 	 'epilepsy' => $epilepsy,
@@ -1119,12 +1177,12 @@ function maids_HandleUploadFile()
 							`assessment`='".$assessment."'
 							WHERE maid_id='".$maidid."' and skill_id = '".$skill_id."'"); 
                         } else {
-                        	if($willing != "" || $experience != "") {
-	                        	$sql = "INSERT INTO `wp_maid_skills` (`maid_id`, `skill_id`,`other`,`willing`,`experience`,`exp_year`,`assessment`) VALUES ('".$maidid."','".$skill_id."','".$other."','".$willing."','".$experience."','".$exp_year."','".$assessment."')"; 
+                        	if($willing != "" || $experience != "" || ((in_array((int)$skill_id, $json_only_skill_ids, true)) && $other != "")) {
+                            	$sql = "INSERT INTO `wp_maid_skills` (`maid_id`, `skill_id`,`other`,`willing`,`experience`,`exp_year`,`assessment`) VALUES ('".$maidid."','".$skill_id."','".$other."','".$willing."','".$experience."','".$exp_year."','".$assessment."')"; 
 	                            
-	                            $wpdb->get_results($sql);
-			                    $lastid = $wpdb->insert_id;
-		                    }
+                            	$wpdb->get_results($sql);
+                            		            $lastid = $wpdb->insert_id;
+                            	        }
                         }
 
                     $other1 = isset($_REQUEST['other_skill_'.$i]) ? $_REQUEST['other_skill_'.$i] : '';
@@ -1132,6 +1190,18 @@ function maids_HandleUploadFile()
 					$experience1 = isset($_REQUEST['experience_skill_'.$i]) ? $_REQUEST['experience_skill_'.$i] : '';
 					$exp_year1 = isset($_REQUEST['expe_year_skill_'.$i]) ? $_REQUEST['expe_year_skill_'.$i] : '';
 					$assessment1 = isset($_REQUEST['ass_skill_'.$i]) ? $_REQUEST['ass_skill_'.$i] : '';
+
+					// Fallback: ensure $json_only_skill_ids exists for OTC loop too
+					if (!isset($json_only_skill_ids) || !is_array($json_only_skill_ids)) {
+						$json_only_skill_ids = array();
+						$areas_fallback = $wpdb->get_results("SELECT id, lable FROM wp_maid_skill_master");
+						foreach ((array)$areas_fallback as $a_row_fb) {
+							$lbl = strtolower((string)$a_row_fb->lable);
+							if (strpos($lbl, 'language') !== false || strpos($lbl, 'other skills') !== false || strpos($lbl, 'care of pets') !== false) {
+								$json_only_skill_ids[] = (int)$a_row_fb->id;
+							}
+						}
+					}
 
 					    $check_data =$wpdb->get_results("SELECT * FROM wp_maid_skills_otc WHERE maid_id='".$maidid."' and skill_id = '".$skill_id."'");
                         $num_rows = $wpdb->num_rows;
@@ -1144,12 +1214,12 @@ function maids_HandleUploadFile()
 							`assessment`='".$assessment1."'
 							WHERE maid_id='".$maidid."' and skill_id = '".$skill_id."'"); 
                         } else {
-                        	if($willing1 != "" || $experience1 != "") {
-	                        	$sql = "INSERT INTO `wp_maid_skills_otc` (`maid_id`, `skill_id`,`other`,`willing`,`experience`,`exp_year`,`assessment`) VALUES ('".$maidid."','".$skill_id."','".$other1."','".$willing1."','".$experience1."','".$exp_year1."','".$assessment1."')"; 
+                        	if($willing1 != "" || $experience1 != "" || ((in_array((int)$skill_id, $json_only_skill_ids, true)) && $other1 != "")) {
+                            	$sql = "INSERT INTO `wp_maid_skills_otc` (`maid_id`, `skill_id`,`other`,`willing`,`experience`,`exp_year`,`assessment`) VALUES ('".$maidid."','".$skill_id."','".$other1."','".$willing1."','".$experience1."','".$exp_year1."','".$assessment1."')"; 
 	                            
-	                            $wpdb->get_results($sql);
-			                    $lastid = $wpdb->insert_id;
-		                    }
+                            	$wpdb->get_results($sql);
+                            		            $lastid = $wpdb->insert_id;
+                            	        }
                         }  
 
 				}
@@ -1686,6 +1756,54 @@ add_action('wp_ajax_update_maid_featured_val', 'maids_update_featured_status');
 add_action('wp_ajax_update_maid_view_val', 'maids_update_view_status');
 add_action('admin_menu', 'maids_add_to_menu');
 register_activation_hook(__FILE__, 'maids_install');
+
+// Admin Tools page callback: runs a safe add of Care of pets skill and shows current ID
+function maids_tool_add_care_pets_page() {
+    if (!current_user_can('manage_options')) { wp_die(__('You do not have sufficient permissions to access this page.')); }
+    global $wpdb;
+    $table = $wpdb->prefix . 'maid_skill_master';
+    $label = 'Care of pets';
+    $existing = $wpdb->get_var($wpdb->prepare("SELECT id FROM `$table` WHERE LOWER(`lable`) = LOWER(%s) LIMIT 1", $label));
+    if (isset($_POST['do_add_care_pets'])) {
+        if (!$existing) {
+            $wpdb->insert($table, array('lable' => $label), array('%s'));
+            $existing = $wpdb->insert_id;
+        }
+        echo '<div class="updated notice"><p>Care of pets skill ensured. ID: '.esc_html($existing ? $existing : $wpdb->insert_id).'</p></div>';
+    }
+    // Always fetch ID for display
+    $current_id = $wpdb->get_var($wpdb->prepare("SELECT id FROM `$table` WHERE LOWER(`lable`) = LOWER(%s) LIMIT 1", $label));
+    echo '<div class="wrap"><h1>Add DB Field: Care of pets</h1>';
+    echo '<p>This tool ensures a row with label <strong>Care of pets</strong> exists in <code>'.esc_html($table).'</code> and shows its ID.</p>';
+    if ($current_id) {
+        echo '<p><strong>Current ID:</strong> '.esc_html($current_id).'</p>';
+    } else {
+        echo '<p><strong>Current ID:</strong> Not found</p>';
+    }
+    echo '<form method="post"><p><button class="button button-primary" name="do_add_care_pets" value="1">Ensure Care of pets Skill</button></p></form>';
+    echo '<h2>SQL Query</h2><code>SELECT `id` FROM `'.esc_html($table).'` WHERE LOWER(`lable`) = \"care of pets\" LIMIT 1;</code>';
+    echo '</div>';
+}
+
+// Admin Tools: ensure st_maid.spec column exists (Spectacles Yes/No)
+function maids_tool_add_spec_column_page() {
+    if (!current_user_can('manage_options')) { wp_die(__('You do not have sufficient permissions to access this page.')); }
+    global $wpdb;
+    $table = $wpdb->prefix . 'st_maid';
+    $has = $wpdb->get_var($wpdb->prepare("SHOW COLUMNS FROM `$table` LIKE %s", 'spec'));
+    if (isset($_POST['do_add_spec'])) {
+        if (!$has) {
+            $wpdb->query("ALTER TABLE `$table` ADD `spec` TINYINT(1) NOT NULL DEFAULT 0 AFTER `care_pets`");
+            $has = 'spec';
+        }
+        echo '<div class="updated notice"><p>Spec column ensured on '.esc_html($table).'.</p></div>';
+    }
+    echo '<div class="wrap"><h1>Add DB Field: Spectacles (spec)</h1>';
+    echo '<p>This tool creates <code>spec</code> TINYINT(1) on <code>'.esc_html($table).'</code> to store whether the maid wears glasses.</p>';
+    echo '<form method="post"><p><button class="button button-primary" name="do_add_spec" value="1">Ensure spec Column</button></p></form>';
+    echo '<h2>SQL</h2><code>ALTER TABLE `'.esc_html($table).'` ADD `spec` TINYINT(1) NOT NULL DEFAULT 0 AFTER `care_pets`;</code>';
+    echo '</div>';
+}
 // Ensure new column exists on upgrade without deactivating/activating plugin
 function maids_maybe_add_care_pets_column() {
     global $wpdb;
@@ -1693,6 +1811,11 @@ function maids_maybe_add_care_pets_column() {
     $col = $wpdb->get_results($wpdb->prepare("SHOW COLUMNS FROM `$table` LIKE %s", 'care_pets'));
     if (empty($col)) {
         $wpdb->query("ALTER TABLE `$table` ADD `care_pets` varchar(20) NOT NULL DEFAULT '' AFTER `children_age`");
+    }
+    // Ensure spectacles (spec) column exists (0/1)
+    $col2 = $wpdb->get_results($wpdb->prepare("SHOW COLUMNS FROM `$table` LIKE %s", 'spec'));
+    if (empty($col2)) {
+        $wpdb->query("ALTER TABLE `$table` ADD `spec` TINYINT(1) NOT NULL DEFAULT 0 AFTER `care_pets`");
     }
 }
 add_action('plugins_loaded', 'maids_maybe_add_care_pets_column');

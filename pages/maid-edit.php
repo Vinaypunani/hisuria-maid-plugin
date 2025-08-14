@@ -1428,6 +1428,19 @@ input[readonly].passport_logo_fr{background: #fff;}
                                 <label class="form-label" for="diet">Dietary Restrictions</label>
                                 <input class="form-input" name="diet" value="<?php echo !empty($row->diet)?stripslashes($row->diet):''; ?>" id="diet" maxlength="50" type="text" placeholder="-">		
                             </div>
+                            <div class="field-item">
+                                <label class="form-label">Spectacles (Glasses)</label>
+                                <div class="medical-options">
+                                    <div class="medical-option">
+                                        <input type="radio" name="spec" value="1" id="spec_yes" <?php if(!empty($row->spec) && (string)$row->spec==='1'){ echo 'checked'; } ?>>
+                                        <label for="spec_yes">Yes</label>
+                                    </div>
+                                    <div class="medical-option">
+                                        <input type="radio" name="spec" value="0" id="spec_no" <?php if((string)($row->spec ?? '0')==='0'){ echo 'checked'; } ?>>
+                                        <label for="spec_no">No</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1640,20 +1653,6 @@ input[readonly].passport_logo_fr{background: #fff;}
                         <input class="form-input" name="rest_day" value="<?php echo !empty($row->rest_day)?$row->rest_day:''; ?>" id="rest_day" maxlength="50" type="text" placeholder="Enter rest day preference">		
                     </div>
 
-                    <?php $care_pets_arr = array_filter(array_map('trim', explode(',', strtolower((string)$row->care_pets)))); ?>
-                    <div class="form-group" style="grid-column: 1 / -1;">
-                        <label class="form-label">Care of Pets</label>
-                        <div class="checkbox-group">
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="care_pets[]" value="dogs" id="care_pets_dogs_edit" <?php echo in_array('dogs', $care_pets_arr, true) ? 'checked' : ''; ?>>
-                                <label for="care_pets_dogs_edit">Dogs</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="care_pets[]" value="cats" id="care_pets_cats_edit" <?php echo in_array('cats', $care_pets_arr, true) ? 'checked' : ''; ?>>
-                                <label for="care_pets_cats_edit">Cats</label>
-                            </div>
-                        </div>
-                    </div>
 
                     <div class="form-group" style="grid-column: 1 / -1;">
                         <label class="form-label" for="other_remark">Other Remarks</label>	
@@ -1988,7 +1987,11 @@ input[readonly].passport_logo_fr{background: #fff;}
                     <div class="fdw-skill-card">
                         <div class="skill-label"><?php echo $area->lable; ?></div>
 
+                        <?php if ((int)$area->id !== 6) { ?>
                         <div class="skill-section">
+                            <?php $is_other_skills = (stripos($area->lable, 'other skills') !== false); ?>
+                            <?php $is_care_pets = (stripos($area->lable, 'care of pets') !== false); ?>
+                            <?php if (!$is_other_skills && !$is_care_pets) { ?>
                             <div class="skill-field">
                                 <label class="skill-field-label">Willingness</label>
                                 <div class="skill-radio-group">
@@ -2041,12 +2044,262 @@ input[readonly].passport_logo_fr{background: #fff;}
                                 <input class="skill-input" type="text" name="expe_year_<?= $area->id; ?>" value="" id="expe_year_<?= $area->id; ?>" maxlength="50" placeholder="Enter years of experience">
                             </div>
                             <?php } ?>
+                            <?php } ?>
 
+                            <?php 
+                            if ($is_other_skills) {
+                                $other_json_raw = !empty($work_row->other) ? $work_row->other : '';
+                                $other_checked = array();
+                                $other_text_val = '';
+                                $preset_options = array(
+                                    'tube_feeding' => 'TUBE FEEDING',
+                                    'insulin_injection' => 'INSULIN INJECTION',
+                                    'autistic' => 'AUTISTIC',
+                                    'stroke_patient' => 'STROKE PATIENT',
+                                    'dementia' => 'DEMENTIA',
+                                    'bedridden' => 'BEDRIDDEN',
+                                    'sewing' => 'SEWING',
+                                    'wheelchair' => 'WHEELCHAIR',
+                                    'mental_disability' => 'MENTAL DISABILITY',
+                                    'other' => 'OTHER SPECIAL NEEDS'
+                                );
+                                $decoded_other = json_decode($other_json_raw, true);
+                                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_other)) {
+                                    if (isset($decoded_other['other_skills']) && is_array($decoded_other['other_skills'])) {
+                                        $other_checked = $decoded_other['other_skills'];
+                                    }
+                                    if (isset($decoded_other['other_text'])) {
+                                        $other_text_val = (string)$decoded_other['other_text'];
+                                    }
+                                }
+                            ?>
+                            <div class="skill-field" style="grid-column: 1 / -1;">
+                                <label class="skill-field-label">Other Skills (select all that apply)</label>
+                                <input type="hidden" name="other_<?= $area->id; ?>" id="other_skills_json_<?= $area->id; ?>" value='<?php echo esc_attr($other_json_raw); ?>'>
+                                <div id="other_skills_container_<?= $area->id; ?>" class="other-skills-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:10px;">
+                                    <?php foreach ($preset_options as $okey => $olabel): $is_checked = !empty($other_checked[$okey]); ?>
+                                    <label class="checkbox-item" style="display:flex; align-items:center; gap:8px;">
+                                        <input type="checkbox" class="other-skill-checkbox" data-key="<?php echo esc_attr($okey); ?>" <?php echo $is_checked ? 'checked' : ''; ?>>
+                                        <span><?php echo esc_html($olabel); ?></span>
+                                    </label>
+                                    <?php endforeach; ?>
+                                </div>
+                                <div id="other_special_needs_wrap_<?= $area->id; ?>" style="margin-top:10px; <?php echo !empty($other_checked['other']) ? '' : 'display:none;'; ?>">
+                                    <label class="skill-field-label" for="other_special_needs_input_<?= $area->id; ?>">Please specify</label>
+                                    <input class="skill-input" type="text" id="other_special_needs_input_<?= $area->id; ?>" maxlength="100" value="<?php echo esc_attr($other_text_val); ?>" placeholder="Enter other special needs">
+                                </div>
+                            </div>
+                            <script type="text/javascript">
+                            (function($){
+                                $(function(){
+                                    var areaId = <?= (int)$area->id; ?>;
+                                    var $container = $('#other_skills_container_' + areaId);
+                                    var $hidden = $('#other_skills_json_' + areaId);
+                                    var $otherWrap = $('#other_special_needs_wrap_' + areaId);
+                                    var $otherInput = $('#other_special_needs_input_' + areaId);
+                                    $container.on('change', '.other-skill-checkbox', function(){
+                                        var key = $(this).data('key');
+                                        if (key === 'other') {
+                                            $otherWrap.toggle(this.checked);
+                                        }
+                                    });
+                                    $('form').on('submit', function(){
+                                        var data = { other_skills: {}, other_text: '' };
+                                        $container.find('.other-skill-checkbox').each(function(){
+                                            var key = $(this).data('key');
+                                            data.other_skills[key] = $(this).is(':checked');
+                                        });
+                                        data.other_text = $.trim($otherInput.val() || '');
+                                        $hidden.val(JSON.stringify(data));
+                                    });
+                                });
+                            })(jQuery);
+                            </script>
+                            <?php } elseif ($is_care_pets) { ?>
+                            <?php
+                                $care_json_raw = !empty($work_row->other) ? $work_row->other : '';
+                                $dog_checked = false; $cat_checked = false;
+                                $decoded_care = json_decode($care_json_raw, true);
+                                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_care)) {
+                                    $flags = isset($decoded_care['care_pets']) && is_array($decoded_care['care_pets']) ? $decoded_care['care_pets'] : array();
+                                    $dog_checked = !empty($flags['dog']);
+                                    $cat_checked = !empty($flags['cat']);
+                                }
+                            ?>
+                            <div class="skill-field" style="grid-column: 1 / -1;">
+                                <label class="skill-field-label">Care of Pets</label>
+                                <input type="hidden" name="other_<?= $area->id; ?>" id="care_pets_json_<?= $area->id; ?>" value='<?php echo esc_attr($care_json_raw); ?>'>
+                                <div id="care_pets_container_<?= $area->id; ?>" class="other-skills-grid" style="display:grid; grid-template-columns: repeat(2, minmax(160px, 1fr)); gap:10px;">
+                                    <label class="checkbox-item" style="display:flex; align-items:center; gap:8px;">
+                                        <input type="checkbox" class="care-pet-checkbox" data-key="dog" <?php echo $dog_checked ? 'checked' : ''; ?>>
+                                        <span>Dog</span>
+                                    </label>
+                                    <label class="checkbox-item" style="display:flex; align-items:center; gap:8px;">
+                                        <input type="checkbox" class="care-pet-checkbox" data-key="cat" <?php echo $cat_checked ? 'checked' : ''; ?>>
+                                        <span>Cat</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <script type="text/javascript">
+                            (function($){
+                                $(function(){
+                                    var areaId = <?= (int)$area->id; ?>;
+                                    var $container = $('#care_pets_container_' + areaId);
+                                    var $hidden = $('#care_pets_json_' + areaId);
+                                    $('form').on('submit', function(){
+                                        var data = { care_pets: {} };
+                                        $container.find('.care-pet-checkbox').each(function(){
+                                            var key = $(this).data('key');
+                                            data.care_pets[key] = $(this).is(':checked');
+                                        });
+                                        $hidden.val(JSON.stringify(data));
+                                    });
+                                });
+                            })(jQuery);
+                            </script>
+                            <?php } else { ?>
                             <div class="skill-field">
                                 <label class="skill-field-label">Other Details</label>
                                 <input class="skill-input" type="text" name="other_<?= $area->id; ?>" value="<?php if(!empty($work_row->other)){ echo $work_row->other;} ?>" id="other_<?= $area->id; ?>" maxlength="50" placeholder="Enter other details">
                             </div>
+                            <?php } ?>
                         </div>
+                        <?php } else { ?>
+                        <?php 
+                        // Prepare existing languages from JSON in `other`
+                        $existing_languages = array();
+                        if (!empty($work_row) && !empty($work_row->other)) {
+                            $decoded_other = json_decode($work_row->other, true);
+                            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_other) && isset($decoded_other['languages']) && is_array($decoded_other['languages'])) {
+                                $existing_languages = $decoded_other['languages'];
+                            }
+                        }
+                        // Load language options dynamically from maid_language_profiency or fallback list
+                        $language_options = $wpdb->get_col("SELECT DISTINCT language FROM {$wpdb->prefix}maid_language_profiency ORDER BY language");
+                        if (empty($language_options)) {
+                            $language_options = array('English','Mandarin','Indonesian/Malay','Cantonese','Arabic','Hindi','Tamil','Burmese','Tagalog','Thai');
+                        }
+                        ?>
+                        <div class="skill-section">
+                            <div class="skill-field" style="grid-column: 1 / -1;">
+                                <label class="skill-field-label">Language Abilities</label>
+                                <input type="hidden" name="other_<?= $area->id; ?>" id="lang_json_<?= $area->id; ?>" value='<?php echo !empty($work_row->other) ? esc_attr($work_row->other) : ''; ?>'>
+                                <div id="language_rows_<?= $area->id; ?>" class="language-rows">
+                                    <?php 
+                                    if (!empty($existing_languages)) { 
+                                        foreach ($existing_languages as $idx => $lang) { 
+                                            $lang_name = isset($lang['name']) ? $lang['name'] : '';
+                                            $has_lang = isset($lang['has_language']) ? $lang['has_language'] : '';
+                                            $skill_lvl = isset($lang['skill']) ? $lang['skill'] : '';
+                                    ?>
+                                    <div class="language-row" data-index="<?php echo (int)$idx; ?>" style="display:grid; grid-template-columns: 2fr 1fr auto; gap:8px; margin-bottom:8px; align-items:center;">
+                                        <div>
+                                            <input type="text" list="language_options_<?= $area->id; ?>" class="skill-input language-name" placeholder="Language name" value="<?php echo esc_attr($lang_name); ?>" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <select class="skill-select skill-level">
+                                                <option value="">Select level</option>
+                                                <option value="Poor" <?php echo ($skill_lvl === 'Poor') ? 'selected' : ''; ?>>Poor</option>
+                                                <option value="Fair" <?php echo ($skill_lvl === 'Fair') ? 'selected' : ''; ?>>Fair</option>
+                                                <option value="Good" <?php echo ($skill_lvl === 'Good') ? 'selected' : ''; ?>>Good</option>
+                                            </select>
+                                        </div>
+                                        <button type="button" class="button remove-language-row" style="padding:6px 10px;">Remove</button>
+                                    </div>
+                                    <?php 
+                                        } 
+                                    } else { 
+                                    ?>
+                                    <div class="language-row" data-index="0" style="display:grid; grid-template-columns: 2fr 1fr auto; gap:8px; margin-bottom:8px; align-items:center;">
+                                        <div>
+                                            <input type="text" list="language_options_<?= $area->id; ?>" class="skill-input language-name" placeholder="Language name" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <select class="skill-select skill-level">
+                                                <option value="">Select level</option>
+                                                <option value="Poor">Poor</option>
+                                                <option value="Fair">Fair</option>
+                                                <option value="Good">Good</option>
+                                            </select>
+                                        </div>
+                                        <button type="button" class="button remove-language-row" style="padding:6px 10px;">Remove</button>
+                                    </div>
+                                    <?php } ?>
+                                </div>
+                                <datalist id="language_options_<?= $area->id; ?>">
+                                    <?php foreach ($language_options as $opt) { ?>
+                                        <option value="<?php echo esc_attr($opt); ?>"></option>
+                                    <?php } ?>
+                                </datalist>
+                                <button type="button" class="button" id="add_language_btn_<?= $area->id; ?>" style="margin-top:8px;">Add Language</button>
+                            </div>
+                        </div>
+
+                        <script type="text/javascript">
+                        (function($){
+                            $(function(){
+                                var areaId = <?= (int)$area->id; ?>;
+                                var $rowsWrap = $('#language_rows_' + areaId);
+                                var $hidden = $('#lang_json_' + areaId);
+
+                                function serializeRows(){
+                                    var data = { languages: [] };
+                                    $rowsWrap.find('.language-row').each(function(){
+                                        var $row = $(this);
+                                        var name = $.trim($row.find('.language-name').val() || '');
+                                        var skill = $row.find('.skill-level').val() || '';
+                                        if(name !== '' || skill !== ''){
+                                            data.languages.push({ name: name, skill: skill });
+                                        }
+                                    });
+                                    $hidden.val(JSON.stringify(data));
+                                }
+
+                                $('#add_language_btn_' + areaId).on('click', function(){
+                                    var idx = $rowsWrap.find('.language-row').length;
+                                    var rowHtml = ''+
+                                        '<div class="language-row" data-index="'+idx+'" style="display:grid; grid-template-columns: 2fr 1fr auto; gap:8px; margin-bottom:8px; align-items:center;">'+
+                                            '<div><input type="text" list="language_options_'+areaId+'" class="skill-input language-name" placeholder="Language name" autocomplete="off"></div>'+
+                                            '<div><select class="skill-select skill-level">'+
+                                                '<option value="">Select level</option>'+
+                                                '<option value="Poor">Poor</option>'+
+                                                '<option value="Fair">Fair</option>'+
+                                                '<option value="Good">Good</option>'+
+                                            '</select></div>'+
+                                            '<button type="button" class="button remove-language-row" style="padding:6px 10px;">Remove</button>'+
+                                        '</div>';
+                                    $rowsWrap.append(rowHtml);
+                                });
+
+                                $rowsWrap.on('click', '.remove-language-row', function(){
+                                    $(this).closest('.language-row').remove();
+                                });
+
+                                $('form').on('submit', function(e){
+                                    var isValid = true;
+                                    $rowsWrap.find('.language-row').each(function(){
+                                        var $row = $(this);
+                                        var name = $.trim($row.find('.language-name').val() || '');
+                                        var $skillSel = $row.find('.skill-level');
+                                        var skill = $skillSel.val() || '';
+                                        if(name !== '' && skill === ''){
+                                            isValid = false;
+                                            $skillSel.css('border', '1px solid #dc2626');
+                                        } else {
+                                            $skillSel.css('border', '');
+                                        }
+                                    });
+                                    if(!isValid){
+                                        e.preventDefault();
+                                        alert('Please select a skill level for each language entered.');
+                                        return false;
+                                    }
+                                    serializeRows();
+                                });
+                            });
+                        })(jQuery);
+                        </script>
+                        <?php } ?>
                     </div>
                     <?php 
                         }
@@ -2127,7 +2380,11 @@ input[readonly].passport_logo_fr{background: #fff;}
                     <div class="fdw-skill-card">
                         <div class="skill-label"><?php echo $area->lable; ?></div>
 
+                        <?php if ((int)$area->id !== 6) { ?>
                         <div class="skill-section">
+                            <?php $is_other_skills_otc = (stripos($area->lable, 'other skills') !== false); ?>
+                            <?php $is_care_pets_otc = (stripos($area->lable, 'care of pets') !== false); ?>
+                            <?php if (!$is_other_skills_otc && !$is_care_pets_otc) { ?>
                             <div class="skill-field">
                                 <label class="skill-field-label">Willingness</label>
                                 <div class="skill-radio-group">
@@ -2179,12 +2436,261 @@ input[readonly].passport_logo_fr{background: #fff;}
                                 <input class="skill-input" type="text" name="expe_year_skill_<?= $area->id; ?>" value="" id="expe_year_skill_<?= $area->id; ?>" maxlength="50" placeholder="Enter years of experience">
                             </div>
                             <?php } ?>
+                            <?php } ?>
 
+                            <?php 
+                            if ($is_other_skills_otc) {
+                                $other_json_raw_skill = !empty($work_row->other) ? $work_row->other : '';
+                                $other_checked_skill = array();
+                                $other_text_val_skill = '';
+                                $preset_options_skill = array(
+                                    'tube_feeding' => 'TUBE FEEDING',
+                                    'insulin_injection' => 'INSULIN INJECTION',
+                                    'autistic' => 'AUTISTIC',
+                                    'stroke_patient' => 'STROKE PATIENT',
+                                    'dementia' => 'DEMENTIA',
+                                    'bedridden' => 'BEDRIDDEN',
+                                    'sewing' => 'SEWING',
+                                    'wheelchair' => 'WHEELCHAIR',
+                                    'mental_disability' => 'MENTAL DISABILITY',
+                                    'other' => 'OTHER SPECIAL NEEDS'
+                                );
+                                $decoded_other_skill = json_decode($other_json_raw_skill, true);
+                                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_other_skill)) {
+                                    if (isset($decoded_other_skill['other_skills']) && is_array($decoded_other_skill['other_skills'])) {
+                                        $other_checked_skill = $decoded_other_skill['other_skills'];
+                                    }
+                                    if (isset($decoded_other_skill['other_text'])) {
+                                        $other_text_val_skill = (string)$decoded_other_skill['other_text'];
+                                    }
+                                }
+                            ?>
+                            <div class="skill-field" style="grid-column: 1 / -1;">
+                                <label class="skill-field-label">Other Skills (select all that apply)</label>
+                                <input type="hidden" name="other_skill_<?= $area->id; ?>" id="other_skills_json_skill_<?= $area->id; ?>" value='<?php echo esc_attr($other_json_raw_skill); ?>'>
+                                <div id="other_skills_container_skill_<?= $area->id; ?>" class="other-skills-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:10px;">
+                                    <?php foreach ($preset_options_skill as $okey => $olabel): $is_checked = !empty($other_checked_skill[$okey]); ?>
+                                    <label class="checkbox-item" style="display:flex; align-items:center; gap:8px;">
+                                        <input type="checkbox" class="other-skill-checkbox-skill" data-key="<?php echo esc_attr($okey); ?>" <?php echo $is_checked ? 'checked' : ''; ?>>
+                                        <span><?php echo esc_html($olabel); ?></span>
+                                    </label>
+                                    <?php endforeach; ?>
+                                </div>
+                                <div id="other_special_needs_wrap_skill_<?= $area->id; ?>" style="margin-top:10px; <?php echo !empty($other_checked_skill['other']) ? '' : 'display:none;'; ?>">
+                                    <label class="skill-field-label" for="other_special_needs_input_skill_<?= $area->id; ?>">Please specify</label>
+                                    <input class="skill-input" type="text" id="other_special_needs_input_skill_<?= $area->id; ?>" maxlength="100" value="<?php echo esc_attr($other_text_val_skill); ?>" placeholder="Enter other special needs">
+                                </div>
+                            </div>
+                            <script type="text/javascript">
+                            (function($){
+                                $(function(){
+                                    var areaId = <?= (int)$area->id; ?>;
+                                    var $container = $('#other_skills_container_skill_' + areaId);
+                                    var $hidden = $('#other_skills_json_skill_' + areaId);
+                                    var $otherWrap = $('#other_special_needs_wrap_skill_' + areaId);
+                                    var $otherInput = $('#other_special_needs_input_skill_' + areaId);
+                                    $container.on('change', '.other-skill-checkbox-skill', function(){
+                                        var key = $(this).data('key');
+                                        if (key === 'other') {
+                                            $otherWrap.toggle(this.checked);
+                                        }
+                                    });
+                                    $('form').on('submit', function(){
+                                        var data = { other_skills: {}, other_text: '' };
+                                        $container.find('.other-skill-checkbox-skill').each(function(){
+                                            var key = $(this).data('key');
+                                            data.other_skills[key] = $(this).is(':checked');
+                                        });
+                                        data.other_text = $.trim($otherInput.val() || '');
+                                        $hidden.val(JSON.stringify(data));
+                                    });
+                                });
+                            })(jQuery);
+                            </script>
+                            <?php } elseif ($is_care_pets_otc) { ?>
+                            <?php
+                                $care_json_raw_skill = !empty($work_row->other) ? $work_row->other : '';
+                                $dog_checked_skill = false; $cat_checked_skill = false;
+                                $decoded_care_skill = json_decode($care_json_raw_skill, true);
+                                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_care_skill)) {
+                                    $flags = isset($decoded_care_skill['care_pets']) && is_array($decoded_care_skill['care_pets']) ? $decoded_care_skill['care_pets'] : array();
+                                    $dog_checked_skill = !empty($flags['dog']);
+                                    $cat_checked_skill = !empty($flags['cat']);
+                                }
+                            ?>
+                            <div class="skill-field" style="grid-column: 1 / -1;">
+                                <label class="skill-field-label">Care of Pets</label>
+                                <input type="hidden" name="other_skill_<?= $area->id; ?>" id="care_pets_json_skill_<?= $area->id; ?>" value='<?php echo esc_attr($care_json_raw_skill); ?>'>
+                                <div id="care_pets_container_skill_<?= $area->id; ?>" class="other-skills-grid" style="display:grid; grid-template-columns: repeat(2, minmax(160px, 1fr)); gap:10px;">
+                                    <label class="checkbox-item" style="display:flex; align-items:center; gap:8px;">
+                                        <input type="checkbox" class="care-pet-checkbox-skill" data-key="dog" <?php echo $dog_checked_skill ? 'checked' : ''; ?>>
+                                        <span>Dog</span>
+                                    </label>
+                                    <label class="checkbox-item" style="display:flex; align-items:center; gap:8px;">
+                                        <input type="checkbox" class="care-pet-checkbox-skill" data-key="cat" <?php echo $cat_checked_skill ? 'checked' : ''; ?>>
+                                        <span>Cat</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <script type="text/javascript">
+                            (function($){
+                                $(function(){
+                                    var areaId = <?= (int)$area->id; ?>;
+                                    var $container = $('#care_pets_container_skill_' + areaId);
+                                    var $hidden = $('#care_pets_json_skill_' + areaId);
+                                    $('form').on('submit', function(){
+                                        var data = { care_pets: {} };
+                                        $container.find('.care-pet-checkbox-skill').each(function(){
+                                            var key = $(this).data('key');
+                                            data.care_pets[key] = $(this).is(':checked');
+                                        });
+                                        $hidden.val(JSON.stringify(data));
+                                    });
+                                });
+                            })(jQuery);
+                            </script>
+                            <?php } else { ?>
                             <div class="skill-field">
                                 <label class="skill-field-label">Other Details</label>
                                 <input class="skill-input" type="text" name="other_skill_<?= $area->id; ?>" value="<?php if(!empty($work_row->other)){ echo $work_row->other;} ?>" id="other_skill_<?= $area->id; ?>" maxlength="50" placeholder="Enter other details">
                             </div>
+                            <?php } ?>
                         </div>
+                        <?php } else { ?>
+                        <?php 
+                        // Prepare existing languages from JSON in `other` (OTC)
+                        $existing_languages_otc = array();
+                        if (!empty($work_row) && !empty($work_row->other)) {
+                            $decoded_other_otc = json_decode($work_row->other, true);
+                            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_other_otc) && isset($decoded_other_otc['languages']) && is_array($decoded_other_otc['languages'])) {
+                                $existing_languages_otc = $decoded_other_otc['languages'];
+                            }
+                        }
+                        // Load language options dynamically or fallback list
+                        $language_options_otc = $wpdb->get_col("SELECT DISTINCT language FROM {$wpdb->prefix}maid_language_profiency ORDER BY language");
+                        if (empty($language_options_otc)) {
+                            $language_options_otc = array('English','Mandarin','Indonesian/Malay','Cantonese','Arabic','Hindi','Tamil','Burmese','Tagalog','Thai');
+                        }
+                        ?>
+                        <div class="skill-section">
+                            <div class="skill-field" style="grid-column: 1 / -1;">
+                                <label class="skill-field-label">Language Abilities</label>
+                                <input type="hidden" name="other_skill_<?= $area->id; ?>" id="lang_json_skill_<?= $area->id; ?>" value='<?php echo !empty($work_row->other) ? esc_attr($work_row->other) : ''; ?>'>
+                                <div id="language_rows_skill_<?= $area->id; ?>" class="language-rows">
+                                    <?php 
+                                    if (!empty($existing_languages_otc)) { 
+                                        foreach ($existing_languages_otc as $idx => $lang) { 
+                                            $lang_name = isset($lang['name']) ? $lang['name'] : '';
+                                            $skill_lvl = isset($lang['skill']) ? $lang['skill'] : '';
+                                    ?>
+                                    <div class="language-row" data-index="<?php echo (int)$idx; ?>" style="display:grid; grid-template-columns: 2fr 1fr auto; gap:8px; margin-bottom:8px; align-items:center;">
+                                        <div>
+                                            <input type="text" list="language_options_skill_<?= $area->id; ?>" class="skill-input language-name" placeholder="Language name" value="<?php echo esc_attr($lang_name); ?>" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <select class="skill-select skill-level">
+                                                <option value="">Select level</option>
+                                                <option value="Poor" <?php echo ($skill_lvl === 'Poor') ? 'selected' : ''; ?>>Poor</option>
+                                                <option value="Fair" <?php echo ($skill_lvl === 'Fair') ? 'selected' : ''; ?>>Fair</option>
+                                                <option value="Good" <?php echo ($skill_lvl === 'Good') ? 'selected' : ''; ?>>Good</option>
+                                            </select>
+                                        </div>
+                                        <button type="button" class="button remove-language-row" style="padding:6px 10px;">Remove</button>
+                                    </div>
+                                    <?php 
+                                        } 
+                                    } else { 
+                                    ?>
+                                    <div class="language-row" data-index="0" style="display:grid; grid-template-columns: 2fr 1fr auto; gap:8px; margin-bottom:8px; align-items:center;">
+                                        <div>
+                                            <input type="text" list="language_options_skill_<?= $area->id; ?>" class="skill-input language-name" placeholder="Language name" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <select class="skill-select skill-level">
+                                                <option value="">Select level</option>
+                                                <option value="Poor">Poor</option>
+                                                <option value="Fair">Fair</option>
+                                                <option value="Good">Good</option>
+                                            </select>
+                                        </div>
+                                        <button type="button" class="button remove-language-row" style="padding:6px 10px;">Remove</button>
+                                    </div>
+                                    <?php } ?>
+                                </div>
+                                <datalist id="language_options_skill_<?= $area->id; ?>">
+                                    <?php foreach ($language_options_otc as $opt) { ?>
+                                        <option value="<?php echo esc_attr($opt); ?>"></option>
+                                    <?php } ?>
+                                </datalist>
+                                <button type="button" class="button" id="add_language_btn_skill_<?= $area->id; ?>" style="margin-top:8px;">Add Language</button>
+                            </div>
+                        </div>
+
+                        <script type="text/javascript">
+                        (function($){
+                            $(function(){
+                                var areaId = <?= (int)$area->id; ?>;
+                                var $rowsWrap = $('#language_rows_skill_' + areaId);
+                                var $hidden = $('#lang_json_skill_' + areaId);
+
+                                function serializeRows(){
+                                    var data = { languages: [] };
+                                    $rowsWrap.find('.language-row').each(function(){
+                                        var $row = $(this);
+                                        var name = $.trim($row.find('.language-name').val() || '');
+                                        var skill = $row.find('.skill-level').val() || '';
+                                        if(name !== '' || skill !== ''){
+                                            data.languages.push({ name: name, skill: skill });
+                                        }
+                                    });
+                                    $hidden.val(JSON.stringify(data));
+                                }
+
+                                $('#add_language_btn_skill_' + areaId).on('click', function(){
+                                    var idx = $rowsWrap.find('.language-row').length;
+                                    var rowHtml = ''+
+                                        '<div class="language-row" data-index="'+idx+'" style="display:grid; grid-template-columns: 2fr 1fr auto; gap:8px; margin-bottom:8px; align-items:center;">'+
+                                            '<div><input type="text" list="language_options_skill_'+areaId+'" class="skill-input language-name" placeholder="Language name" autocomplete="off"></div>'+
+                                            '<div><select class="skill-select skill-level">'+
+                                                '<option value="">Select level</option>'+
+                                                '<option value="Poor">Poor</option>'+
+                                                '<option value="Fair">Fair</option>'+
+                                                '<option value="Good">Good</option>'+
+                                            '</select></div>'+
+                                            '<button type="button" class="button remove-language-row" style="padding:6px 10px;">Remove</button>'+
+                                        '</div>';
+                                    $rowsWrap.append(rowHtml);
+                                });
+
+                                $rowsWrap.on('click', '.remove-language-row', function(){
+                                    $(this).closest('.language-row').remove();
+                                });
+
+                                $('form').on('submit', function(e){
+                                    var isValid = true;
+                                    $rowsWrap.find('.language-row').each(function(){
+                                        var $row = $(this);
+                                        var name = $.trim($row.find('.language-name').val() || '');
+                                        var $skillSel = $row.find('.skill-level');
+                                        var skill = $skillSel.val() || '';
+                                        if(name !== '' && skill === ''){
+                                            isValid = false;
+                                            $skillSel.css('border', '1px solid #dc2626');
+                                        } else {
+                                            $skillSel.css('border', '');
+                                        }
+                                    });
+                                    if(!isValid){
+                                        e.preventDefault();
+                                        alert('Please select a skill level for each language entered.');
+                                        return false;
+                                    }
+                                    serializeRows();
+                                });
+                            });
+                        })(jQuery);
+                        </script>
+                        <?php } ?>
                     </div>
                     <?php 
                         }
