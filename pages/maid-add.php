@@ -201,6 +201,50 @@
 .form-textarea.error,
 .form-select.error {
     border-color: var(--danger-color);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Chosen dropdown error styles - consistent with form inputs */
+.chosen-container.error .chosen-single {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+/* Ensure no extra borders on form groups with errors - override any global styles */
+.form-group .chosen-container.error,
+.form-group.error,
+.form-group:has(.error),
+.form-group:has(.chosen-container.error) {
+    border-left: none !important;
+    border-top: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    border: none !important;
+    outline: none !important;
+}
+
+/* Ensure only the chosen single element gets the error styling */
+.chosen-container.error .chosen-single {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+    border-left-color: #ef4444 !important;
+    border-right-color: #ef4444 !important;
+    border-top-color: #ef4444 !important;
+    border-bottom-color: #ef4444 !important;
+}
+
+/* Error highlighting for language table and interview checkboxes */
+.error-highlight {
+    border: 2px solid #ef4444 !important;
+    border-radius: 8px !important;
+    background-color: rgba(239, 68, 68, 0.05) !important;
+    padding: 10px !important;
+    margin: 5px 0 !important;
+}
+
+.error-highlight .modern-table th,
+.error-highlight .modern-table td {
+    background-color: rgba(239, 68, 68, 0.02) !important;
 }
 
 .form-textarea {
@@ -731,7 +775,14 @@
                 
                 <div class="form-group">
                     <label for="nationality" class="form-label required">Nationality</label>
-                    <input class="form-input" name="nationality" value="<?php echo isset($maid_prefill['nationality']) ? esc_attr($maid_prefill['nationality']) : ''; ?>" id="nationality" maxlength="50" type="text" required autocomplete="off" placeholder="Enter nationality">
+                    <select name="nationality" id="nationality" class="form-select stchosen chosen-select" data-required="true">
+                        <option value="">Select nationality</option>
+                        <option value="Indonesian" <?php echo (isset($maid_prefill['nationality']) && $maid_prefill['nationality']=='Indonesian') ? 'selected' : ''; ?>>Indonesian</option>
+                        <option value="Philippines" <?php echo (isset($maid_prefill['nationality']) && $maid_prefill['nationality']=='Philippines') ? 'selected' : ''; ?>>Philippines</option>
+                        <option value="Myanmar" <?php echo (isset($maid_prefill['nationality']) && $maid_prefill['nationality']=='Myanmar') ? 'selected' : ''; ?>>Myanmar</option>
+                        <option value="Indian" <?php echo (isset($maid_prefill['nationality']) && $maid_prefill['nationality']=='Indian') ? 'selected' : ''; ?>>Indian</option>
+                        <option value="Sri Lankan" <?php echo (isset($maid_prefill['nationality']) && $maid_prefill['nationality']=='Sri Lankan') ? 'selected' : ''; ?>>Sri Lankan</option>
+                    </select>
                 </div>
                 
                 <div class="form-group">
@@ -751,7 +802,7 @@
                 
                 <div class="form-group">
                     <label for="marrital_status" class="form-label required">Marital Status</label>
-                    <select name="marrital_status" id="marrital_status" class="form-select stchosen chosen-select" required>
+                    <select name="marrital_status" id="marrital_status" class="form-select stchosen chosen-select" data-required="true">
                         <option value="">Select marital status</option>
                 <option value="1" <?php echo (isset($maid_prefill['marrital_status']) && $maid_prefill['marrital_status']=='1') ? 'selected' : ''; ?>>Single</option>
                 <option value="2" <?php echo (isset($maid_prefill['marrital_status']) && $maid_prefill['marrital_status']=='2') ? 'selected' : ''; ?>>Married</option>
@@ -760,11 +811,15 @@
 				<?php 
 					global $wpdb;
 					$communetable = $wpdb->prefix . "commune";
-					$communes = $wpdb->get_results("SELECT name FROM `$communetable` ");
-					if(!empty($communes)){
-						  foreach($communes as $type){
-							  echo '<option value="'.$type->name.'">'.$type->name.'</option>';
-						  }
+					// Check if table exists before querying
+					$table_exists = $wpdb->get_var("SHOW TABLES LIKE '$communetable'");
+					if($table_exists) {
+						$communes = $wpdb->get_results("SELECT name FROM `$communetable` ");
+						if(!empty($communes)){
+							  foreach($communes as $type){
+								  echo '<option value="'.$type->name.'">'.$type->name.'</option>';
+							  }
+						}
 					}
 				?>
 			</select>
@@ -796,17 +851,22 @@
 			</div>
 			<!-- <div class="control-wrap">
 			<label for="category">Category <span class="required">*</span></label>
-			<select name="category[]" id="category" class="maid-text stchosen" required multiple>
+			<select name="category[]" id="category" class="maid-text stchosen" data-required="true" multiple>
 			<option value="">Select Category</option>
 				<?php 
 					$maid_cat_table = $wpdb->prefix . "maid_cat";
+					$cur_lan = 'en'; // Default language
 					$name = "name_$cur_lan";
-					$query = "SELECT id, $name FROM `$maid_cat_table` where is_deleted = 1 GROUP BY `$name` ORDER BY `$name`";
-					$categories = $wpdb->get_results($query);
-					  if(!empty($categories)){
-						  foreach($categories as $type){
-						  echo "<option value='{$type->id}'>{$type->$name}</option>";
-						}
+					// Check if table exists before querying
+					$table_exists = $wpdb->get_var("SHOW TABLES LIKE '$maid_cat_table'");
+					if($table_exists) {
+						$query = "SELECT id, $name FROM `$maid_cat_table` where is_deleted = 1 GROUP BY `$name` ORDER BY `$name`";
+						$categories = $wpdb->get_results($query);
+						  if(!empty($categories)){
+							  foreach($categories as $type){
+							  echo "<option value='{$type->id}'>{$type->$name}</option>";
+							  }
+						  }
 					}
 				?>
 			</select>
@@ -888,24 +948,24 @@
 				</div>
 
             <div class="form-grid">
-                <div class="form-group" id="field_no_of_children" style="display:none;">
+                <div class="form-group">
                     <label for="no_of_children" class="form-label">Number of Children</label>
-                    <input class="form-input" name="no_of_children" value="" id="no_of_children" maxlength="50" type="text" autocomplete="off" placeholder="Enter number of children">
+                    <input class="form-input" name="no_of_children" value="<?php echo isset($maid_prefill['no_of_children']) ? esc_attr($maid_prefill['no_of_children']) : ''; ?>" id="no_of_children" type="number" min="0" max="20" step="1" autocomplete="off" placeholder="Enter number of children (0 if none)">
 				</div>
 
-                <div class="form-group" id="field_children_age" style="display:none;">
-                    <label for="children_age" class="form-label">Children Age</label>
-                    <input class="form-input" name="children_age" value="" id="children_age" maxlength="50" type="text" autocomplete="off" placeholder="Enter children age">
+                <div class="form-group">
+                    <label for="children_age" class="form-label">Age(s) of Children (If Any)</label>
+                    <input class="form-input" name="children_age" value="<?php echo isset($maid_prefill['children_age']) ? esc_attr($maid_prefill['children_age']) : ''; ?>" id="children_age" maxlength="100" type="text" autocomplete="off" placeholder="e.g., 5, 8, 12 (separate ages with commas)">
 				</div>
 
                 <div class="form-group">
                     <label for="no_of_siblings" class="form-label">Number of Siblings</label>
-                    <input class="form-input" name="no_of_siblings" value="" id="no_of_siblings" maxlength="50" type="text" autocomplete="off" placeholder="Enter number of siblings">
+                    <input class="form-input" name="no_of_siblings" value="<?php echo isset($maid_prefill['no_of_siblings']) ? esc_attr($maid_prefill['no_of_siblings']) : ''; ?>" id="no_of_siblings" type="number" min="0" max="20" step="1" autocomplete="off" placeholder="Enter number of siblings">
                 </div>
 
                 <div class="form-group">
                     <label for="my_number" class="form-label">I am Number</label>
-                    <input class="form-input" name="my_number" value="" id="my_number" maxlength="50" type="text" autocomplete="off" placeholder="Enter your position among siblings">
+                    <input class="form-input" name="my_number" value="<?php echo isset($maid_prefill['my_number']) ? esc_attr($maid_prefill['my_number']) : ''; ?>" id="my_number" type="number" min="1" max="20" step="1" autocomplete="off" placeholder="Enter your position among siblings">
 				</div>
 			</div>
 
@@ -930,6 +990,19 @@
                     <label for="diet" class="form-label">Dietary Restrictions</label>
                     <input class="form-input" name="diet" value="<?php echo isset($maid_prefill['diet']) ? esc_attr($maid_prefill['diet']) : ''; ?>" id="diet" maxlength="50" type="text" autocomplete="off" placeholder="Enter dietary restrictions">
 	                </div>
+                <div class="form-group">
+                    <label class="form-label">Spectacles (Glasses)</label>
+                    <div class="radio-group">
+                        <label class="radio-item">
+                            <input type="radio" name="spec" value="1" id="spec_yes">
+                            <span>Yes</span>
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="spec" value="0" id="spec_no" checked>
+                            <span>No</span>
+                        </label>
+                    </div>
+                </div>
                 </div>
 
             <!-- Medical Conditions -->
@@ -947,7 +1020,7 @@
                             <label for="mental_illness_yes">Yes</label>
 	                </div>
                         <div class="radio-item">
-                            <input type="radio" name="mental_illness" value="0" id="mental_illness_no" class="illness1">
+                            <input type="radio" name="mental_illness" value="0" id="mental_illness_no" class="illness1" checked>
                             <label for="mental_illness_no">No</label>
                 </div>
 	                </div>
@@ -961,7 +1034,7 @@
                             <label for="epilepsy_yes">Yes</label>
                         </div>
                         <div class="radio-item">
-                            <input type="radio" name="epilepsy" value="0" id="epilepsy_no" class="illness2">
+                            <input type="radio" name="epilepsy" value="0" id="epilepsy_no" class="illness2" checked>
                             <label for="epilepsy_no">No</label>
                         </div>
 	                </div>
@@ -975,7 +1048,7 @@
                             <label for="asthma_yes">Yes</label>
                         </div>
                         <div class="radio-item">
-                            <input type="radio" name="asthma" value="0" id="asthma_no" class="illness3">
+                            <input type="radio" name="asthma" value="0" id="asthma_no" class="illness3" checked>
                             <label for="asthma_no">No</label>
                         </div>
 	                </div>
@@ -989,7 +1062,7 @@
                             <label for="diabetes_yes">Yes</label>
                         </div>
                         <div class="radio-item">
-                            <input type="radio" name="diabetas" value="0" id="diabetes_no" class="illness4">
+                            <input type="radio" name="diabetas" value="0" id="diabetes_no" class="illness4" checked>
                             <label for="diabetes_no">No</label>
                         </div>
 	                </div>
@@ -1003,7 +1076,7 @@
                             <label for="hypertension_yes">Yes</label>
                         </div>
                         <div class="radio-item">
-                            <input type="radio" name="hypertension" value="0" id="hypertension_no" class="illness5">
+                            <input type="radio" name="hypertension" value="0" id="hypertension_no" class="illness5" checked>
                             <label for="hypertension_no">No</label>
                         </div>
 	                </div>
@@ -1017,7 +1090,7 @@
                             <label for="tuberculosis_yes">Yes</label>
                         </div>
                         <div class="radio-item">
-                            <input type="radio" name="tuberculosis" value="0" id="tuberculosis_no" class="illness6">
+                            <input type="radio" name="tuberculosis" value="0" id="tuberculosis_no" class="illness6" checked>
                             <label for="tuberculosis_no">No</label>
                         </div>
 	                </div>
@@ -1031,7 +1104,7 @@
                             <label for="heart_disease_yes">Yes</label>
                         </div>
                         <div class="radio-item">
-                            <input type="radio" name="heart_disease" value="0" id="heart_disease_no" class="illness7">
+                            <input type="radio" name="heart_disease" value="0" id="heart_disease_no" class="illness7" checked>
                             <label for="heart_disease_no">No</label>
                         </div>
                     </div>
@@ -1045,7 +1118,7 @@
                             <label for="malaria_yes">Yes</label>
 				</div>
                         <div class="radio-item">
-                            <input type="radio" name="malaria" value="0" id="malaria_no" class="illness8">
+                            <input type="radio" name="malaria" value="0" id="malaria_no" class="illness8" checked>
                             <label for="malaria_no">No</label>
                         </div>
                     </div>
@@ -1059,7 +1132,7 @@
                             <label for="operations_yes">Yes</label>
                         </div>
                         <div class="radio-item">
-                            <input type="radio" name="operation" value="0" id="operations_no" class="illness9">
+                            <input type="radio" name="operation" value="0" id="operations_no" class="illness9" checked>
                             <label for="operations_no">No</label>
                         </div>
                     </div>
@@ -1176,19 +1249,6 @@
                     <input class="form-input" name="rest_day" value="<?php echo isset($maid_prefill['rest_day']) ? esc_attr($maid_prefill['rest_day']) : ''; ?>" id="rest_day" type="number" inputmode="numeric" min="0" max="31" step="1" autocomplete="off" placeholder="Enter rest days per month (0-31)">
                 </div>
 
-                <div class="form-group" style="grid-column: 1 / -1;">
-                    <label class="form-label">Care of Pets</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" name="care_pets[]" value="dogs" id="care_pets_dogs">
-                            <label for="care_pets_dogs">Dogs</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" name="care_pets[]" value="cats" id="care_pets_cats">
-                            <label for="care_pets_cats">Cats</label>
-                        </div>
-                    </div>
-                </div>
 
                 <div class="form-group" style="grid-column: 1 / -1;">
                     <label for="other_remark" class="form-label">Other Remarks</label>
@@ -1197,12 +1257,12 @@
             </div>
             
             <!-- Work Experience -->
-            <div class="section-header">
+            <!-- <div class="section-header">
                 <h3>🧾 Work Experience</h3>
                 <p>Enter previous work experience records</p>
-            </div>
+            </div> -->
 
-            <div id="work_experience_container">
+            <!-- <div id="work_experience_container">
                 <div class="dynamic-section" id="work_experience">
                     <div class="form-grid">
                         <div class="form-group">
@@ -1223,11 +1283,11 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
-            <div class="add-remove-container">
+            <!-- <div class="add-remove-container">
                 <button type="button" class="add-btn" onclick="add_work_experience()" title="Add Work Experience">+</button>
-            </div>
+            </div> -->
 
             <!-- Employment History Overseas -->
             <div class="section-header">
@@ -1240,12 +1300,12 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="from_date" class="form-label">From Date</label>
-                    <input class="form-input from_date" name="from_date[]" value="<?php echo isset($maid_prefill['from_date'][0]) ? esc_attr($maid_prefill['from_date'][0]) : ''; ?>" id="from_date" maxlength="50" type="text" autocomplete="off" placeholder="DD/MM/YYYY">
+                    <input class="form-input from_date emp-from" name="from_date[]" value="<?php echo isset($maid_prefill['from_date'][0]) ? esc_attr($maid_prefill['from_date'][0]) : ''; ?>" id="from_date" maxlength="50" type="text" autocomplete="off" placeholder="DD/MM/YYYY">
 					</div>
                         
                         <div class="form-group">
                             <label for="to_date" class="form-label">To Date</label>
-                    <input class="form-input to_date" name="to_date[]" value="<?php echo isset($maid_prefill['to_date'][0]) ? esc_attr($maid_prefill['to_date'][0]) : ''; ?>" id="to_date" maxlength="50" type="text" autocomplete="off" placeholder="DD/MM/YYYY">
+                    <input class="form-input to_date emp-to" name="to_date[]" value="<?php echo isset($maid_prefill['to_date'][0]) ? esc_attr($maid_prefill['to_date'][0]) : ''; ?>" id="to_date" maxlength="50" type="text" autocomplete="off" placeholder="DD/MM/YYYY">
 					</div>
 						
                         <div class="form-group">
@@ -1299,12 +1359,15 @@
 
         <!-- Step 4: Skills & Languages -->
         <div class="form-section" id="step-4">
-            <div class="section-header">
+            <!-- <div class="section-header">
                 <h3>🗣️ Language Proficiency</h3>
                 <p>Language skills and communication abilities</p>
-            </div>
+                <div class="alert alert-info" style="margin-top: 15px; padding: 10px; background: #e3f2fd; border-left: 4px solid #2196f3; color: #1976d2;">
+                    <strong>Required:</strong> Please select at least one interview method below. Language proficiency is optional.
+                </div>
+            </div> -->
             
-            <table class="modern-table">
+            <!-- <table class="modern-table">
                 <thead>
                     <tr>
             		<th>Language</th>
@@ -1368,15 +1431,15 @@
             		</td>
             	</tr>
                 </tbody>
-            </table>
+            </table> -->
             
             <!-- Work Areas Section -->
-            <div class="section-header">
+            <!-- <div class="section-header">
                 <h3>🏠 Work Areas</h3>
                 <p>General work areas and tasks the maid is willing to perform</p>
             </div>
-            
-            <table class="modern-table">
+             -->
+            <!-- <table class="modern-table">
                 <thead>
                     <tr>
                         <th>Task</th>
@@ -1417,7 +1480,7 @@
                     }
                     ?>
                 </tbody>
-            </table>
+            </table> -->
             
             <!-- MDW Skills Section -->
             <div class="section-header">
@@ -1436,7 +1499,7 @@
 
                     <div class="form-group" style="grid-column: 1 / -1;">
                         <label class="form-label">Training Centre Singapore EA</label>
-                        <div class="checkbox-group">
+                        <div class="checkbox-group fdw-interview-checkbox-group">
                             <div class="checkbox-item">
                                 <input type="checkbox" name="fdw_interview[]" value="1" id="fdw_interview_1">
                                 <label for="fdw_interview_1">Interviewed via Telephone/Teleconference</label>
@@ -1456,22 +1519,26 @@
                         </div>
 					</div>	
 
-                <?php 
-					$work_area_tbl = $wpdb->prefix . "maid_skill_master";
-					$query = "SELECT * FROM `$work_area_tbl` ORDER BY `id`";
-					$areas = $wpdb->get_results($query);
-					$count = $wpdb->num_rows;
-					?>
+                    <?php 
+                    $work_area_tbl = $wpdb->prefix . "maid_skill_master";
+                    $query = "SELECT * FROM `$work_area_tbl` ORDER BY `id`";
+                    $areas = $wpdb->get_results($query);
+                    $count = $wpdb->num_rows;
+                    ?>
                     <input class="form-input" name="skill_count" value="<?php echo $count; ?>" id="skill_count" maxlength="50" type="hidden">
                     
-					<?php 
-					if(!empty($areas)){
-				    foreach($areas as $area){ ?>
+                    <?php 
+                    if(!empty($areas)){
+                    foreach($areas as $area){ 
+                        $is_other_skills = (stripos($area->lable, 'other skills') !== false);
+                        $is_care_pets = (stripos($area->lable, 'care of pets') !== false);
+                        ?>
                             <div class="form-group" style="grid-column: 1 / -1;">
                                 <div class="section-header" style="">
                                     <h4><?php echo $area->lable; ?></h4>
                                 </div>
                                 
+                                <?php if ((int)$area->id !== 6 && !$is_other_skills && !$is_care_pets) { ?>
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label class="form-label">Willingness</label>
@@ -1481,11 +1548,11 @@
                                                 <label for="willingness_<?= $area->id; ?>_yes">Yes</label>
                                             </div>
                                             <div class="radio-item">
-                                                <input type="radio" value="No" name="willingness_<?= $area->id; ?>" id="willingness_<?= $area->id; ?>_no">
+                                                <input type="radio" value="No" name="willingness_<?= $area->id; ?>" id="willingness_<?= $area->id; ?>_no" checked>
                                                 <label for="willingness_<?= $area->id; ?>_no">No</label>
                                             </div>
                                         </div>
-					</div>
+                                    </div>
 
                                     <div class="form-group">
                                         <label class="form-label">Experience</label>
@@ -1495,38 +1562,195 @@
                                                 <label for="experience_<?= $area->id; ?>_yes">Yes</label>
                                             </div>
                                             <div class="radio-item">
-                                                <input type="radio" value="No" name="experience_<?= $area->id; ?>" id="experience_<?= $area->id; ?>_no">
+                                                <input type="radio" value="No" name="experience_<?= $area->id; ?>" id="experience_<?= $area->id; ?>_no" checked>
                                                 <label for="experience_<?= $area->id; ?>_no">No</label>
                                             </div>
                                         </div>
-					</div>	
+                                    </div>
 
                                     <div class="form-group">
                                         <label for="skill_area_<?= $area->id; ?>" class="form-label">Assessment</label>
                                         <select name="skill_area_<?= $area->id; ?>" id="skill_area_<?= $area->id; ?>" class="form-select">
-							<option value="N.A">N.A</option>
-							<option value="Poor">Poor</option>
-							<option value="Fair">Fair</option>
-							<option value="Good">Good</option>
-							<option value="Very Good">Very Good</option>
-							<option value="Excellent">Excellent</option>
-						</select>
-					</div>	
-					</div>
+                                            <option value="N.A">N.A</option>
+                                            <option value="Poor">Poor</option>
+                                            <option value="Fair">Fair</option>
+                                            <option value="Good">Good</option>
+                                            <option value="Very Good">Very Good</option>
+                                            <option value="Excellent">Excellent</option>
+                                        </select>
+                                    </div>
+                                </div>
 
                                 <div class="form-group exp_year" style="display:none;" id="exp_year_<?= $area->id; ?>">
                                     <label for="expe_year_<?= $area->id; ?>" class="form-label">Experience Year</label>
                                     <input class="form-input" name="expe_year_<?= $area->id; ?>" value="" id="expe_year_<?= $area->id; ?>" maxlength="50" type="text" autocomplete="off" placeholder="Enter years of experience">
                                 </div>
-                            </div>
 
                                 <div class="form-group">
                                     <label for="other_<?= $area->id; ?>" class="form-label">Other Details</label>
                                     <input class="form-input" name="other_<?= $area->id; ?>" value="" id="other_<?= $area->id; ?>" maxlength="50" type="text" autocomplete="off" placeholder="Enter other details">
-					</div>
-					<?php 
-					    }
-					} ?>    
+                                </div>
+                                <?php } elseif ((int)$area->id === 6) { 
+                                    // Language Abilities JSON UI
+                                    $language_options = $wpdb->get_col("SELECT DISTINCT language FROM {$wpdb->prefix}maid_language_profiency ORDER BY language");
+                                    if (empty($language_options)) {
+                                        $language_options = array('English','Mandarin','Indonesian/Malay','Cantonese','Arabic','Hindi','Tamil','Burmese','Tagalog','Thai');
+                                    }
+                                ?>
+                                <div class="form-group" style="grid-column: 1 / -1;">
+                                    <label class="form-label">Language Abilities</label>
+                                    <input type="hidden" name="other_<?= $area->id; ?>" id="lang_json_<?= $area->id; ?>" value=''>
+                                    <div id="language_rows_<?= $area->id; ?>" class="language-rows">
+                                        <div class="form-row language-row" data-index="0" style="gap:8px; align-items:center;">
+                                            <div class="form-group" style="flex:1;">
+                                                <input type="text" list="language_options_<?= $area->id; ?>" class="form-input language-name" placeholder="Language name" autocomplete="off">
+                                            </div>
+                                            <div class="form-group" style="width:220px;">
+                                                <select class="form-select skill-level">
+                                                    <option value="">Select level</option>
+                                                    <option value="Poor">Poor</option>
+                                                    <option value="Fair">Fair</option>
+                                                    <option value="Good">Good</option>
+                                                </select>
+                                            </div>
+                                            <button type="button" class="btn btn-secondary remove-language-row">Remove</button>
+                                        </div>
+                                    </div>
+                                    <datalist id="language_options_<?= $area->id; ?>">
+                                        <?php foreach ($language_options as $opt) { ?>
+                                            <option value="<?php echo esc_attr($opt); ?>"></option>
+                                        <?php } ?>
+                                    </datalist>
+                                    <button type="button" class="btn btn-primary" id="add_language_btn_<?= $area->id; ?>" style="margin-top:8px;">Add Language</button>
+                                </div>
+                                <script type="text/javascript">
+                                (function($){
+                                    $(function(){
+                                        var areaId = <?= (int)$area->id; ?>;
+                                        var $rowsWrap = $('#language_rows_' + areaId);
+                                        var $hidden = $('#lang_json_' + areaId);
+                                        function serializeRows(){
+                                            var data = { languages: [] };
+                                            $rowsWrap.find('.language-row').each(function(){
+                                                var $row = $(this);
+                                                var name = $.trim($row.find('.language-name').val() || '');
+                                                var skill = $row.find('.skill-level').val() || '';
+                                                if(name !== '' || skill !== ''){
+                                                    data.languages.push({ name: name, skill: skill });
+                                                }
+                                            });
+                                            $hidden.val(JSON.stringify(data));
+                                        }
+                                        $('#add_language_btn_' + areaId).on('click', function(){
+                                            var idx = $rowsWrap.find('.language-row').length;
+                                            var rowHtml = ''+
+                                                '<div class="form-row language-row" data-index="'+idx+'" style="gap:8px; align-items:center;">'+
+                                                    '<div class="form-group" style="flex:1;"><input type="text" list="language_options_'+areaId+'" class="form-input language-name" placeholder="Language name" autocomplete="off"></div>'+
+                                                    '<div class="form-group" style="width:220px;"><select class="form-select skill-level">'+
+                                                        '<option value="">Select level</option>'+
+                                                        '<option value="Poor">Poor</option>'+
+                                                        '<option value="Fair">Fair</option>'+
+                                                        '<option value="Good">Good</option>'+
+                                                    '</select></div>'+
+                                                    '<button type="button" class="btn btn-secondary remove-language-row">Remove</button>'+
+                                                '</div>';
+                                            $rowsWrap.append(rowHtml);
+                                        });
+                                        $rowsWrap.on('click', '.remove-language-row', function(){
+                                            $(this).closest('.language-row').remove();
+                                        });
+                                        $('form').on('submit', function(){ serializeRows(); });
+                                    });
+                                })(jQuery);
+                                </script>
+                                <?php } elseif ($is_other_skills) { ?>
+                                <?php
+                                    $preset_options = array(
+                                        'tube_feeding' => 'TUBE FEEDING',
+                                        'insulin_injection' => 'INSULIN INJECTION',
+                                        'autistic' => 'AUTISTIC',
+                                        'stroke_patient' => 'STROKE PATIENT',
+                                        'dementia' => 'DEMENTIA',
+                                        'bedridden' => 'BEDRIDDEN',
+                                        'sewing' => 'SEWING',
+                                        'wheelchair' => 'WHEELCHAIR',
+                    'mental_disability' => 'MENTAL DISABILITY',
+                                        'other' => 'OTHER SPECIAL NEEDS'
+                                    );
+                                ?>
+                                <div class="form-group" style="grid-column: 1 / -1;">
+                                    <label class="form-label">Other Skills (select all that apply)</label>
+                                    <input type="hidden" name="other_<?= $area->id; ?>" id="other_skills_json_<?= $area->id; ?>" value=''>
+                                    <div id="other_skills_container_<?= $area->id; ?>" class="checkbox-group">
+                                        <?php foreach ($preset_options as $okey => $olabel): ?>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" class="other-skill-checkbox" data-key="<?php echo esc_attr($okey); ?>">
+                                            <span><?php echo esc_html($olabel); ?></span>
+                                        </label>
+                                        <?php endforeach; ?>
+                                    </div>
+                                    <div id="other_special_needs_wrap_<?= $area->id; ?>" style="margin-top:10px; display:none;">
+                                        <label class="form-label" for="other_special_needs_input_<?= $area->id; ?>">Please specify</label>
+                                        <input class="form-input" type="text" id="other_special_needs_input_<?= $area->id; ?>" maxlength="100" value="" placeholder="Enter other special needs">
+                                    </div>
+                                </div>
+                                <script type="text/javascript">
+                                (function($){
+                                    $(function(){
+                                        var areaId = <?= (int)$area->id; ?>;
+                                        var $container = $('#other_skills_container_' + areaId);
+                                        var $hidden = $('#other_skills_json_' + areaId);
+                                        var $otherWrap = $('#other_special_needs_wrap_' + areaId);
+                                        var $otherInput = $('#other_special_needs_input_' + areaId);
+                                        $container.on('change', '.other-skill-checkbox', function(){
+                                            var key = $(this).data('key');
+                                            if (key === 'other') {
+                                                $otherWrap.toggle(this.checked);
+                                            }
+                                        });
+                                        $('form').on('submit', function(){
+                                            var data = { other_skills: {}, other_text: '' };
+                                            $container.find('.other-skill-checkbox').each(function(){
+                                                var key = $(this).data('key');
+                                                data.other_skills[key] = $(this).is(':checked');
+                                            });
+                                            data.other_text = $.trim($otherInput.val() || '');
+                                            $hidden.val(JSON.stringify(data));
+                                        });
+                                    });
+                                })(jQuery);
+                                </script>
+                                <?php } elseif ($is_care_pets) { ?>
+                                <div class="form-group" style="grid-column: 1 / -1;">
+                                    <label class="form-label">Care of Pets</label>
+                                    <input type="hidden" name="other_<?= $area->id; ?>" id="care_pets_json_<?= $area->id; ?>" value=''>
+                                    <div id="care_pets_container_<?= $area->id; ?>" class="checkbox-group">
+                                        <label class="checkbox-item"><input type="checkbox" class="care-pet-checkbox" data-key="dog"><span>Dog</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" class="care-pet-checkbox" data-key="cat"><span>Cat</span></label>
+                                    </div>
+                                </div>
+                                <script type="text/javascript">
+                                (function($){
+                                    $(function(){
+                                        var areaId = <?= (int)$area->id; ?>;
+                                        var $container = $('#care_pets_container_' + areaId);
+                                        var $hidden = $('#care_pets_json_' + areaId);
+                                        $('form').on('submit', function(){
+                                            var data = { care_pets: {} };
+                                            $container.find('.care-pet-checkbox').each(function(){
+                                                var key = $(this).data('key');
+                                                data.care_pets[key] = $(this).is(':checked');
+                                            });
+                                            $hidden.val(JSON.stringify(data));
+                                        });
+                                    });
+                                })(jQuery);
+                                </script>
+                                <?php } ?>
+                            </div>
+                    <?php 
+                        }
+                    } ?>    
 	            </div>
 	        </div>
             
@@ -1557,7 +1781,7 @@
 
                     <div class="form-group" style="grid-column: 1 / -1;">
                         <label class="form-label">Training Centre Interview</label>
-                        <div class="checkbox-group">
+                        <div class="checkbox-group interview-checkbox-group">
                             <div class="checkbox-item">
                                 <input type="checkbox" name="tc_interview[]" value="1" id="tc_interview_1">
                                 <label for="tc_interview_1">Interviewed via Telephone/Teleconference</label>
@@ -1577,14 +1801,18 @@
                         </div>
 					</div>
 
-					<?php 
-					if(!empty($areas)){
-				    foreach($areas as $area){ ?>
+                    <?php 
+                    if(!empty($areas)){
+                    foreach($areas as $area){ 
+                        $is_other_skills_otc = (stripos($area->lable, 'other skills') !== false);
+                        $is_care_pets_otc = (stripos($area->lable, 'care of pets') !== false);
+                        ?>
                             <div class="form-group" style="grid-column: 1 / -1;">
                                 <div class="section-header" style="">
                                     <h4><?php echo $area->lable; ?></h4>
-					</div>
+                                </div>
 
+                                <?php if ((int)$area->id !== 6 && !$is_other_skills_otc && !$is_care_pets_otc) { ?>
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label class="form-label">Willingness</label>
@@ -1594,11 +1822,11 @@
                                                 <label for="willingness_skill_<?= $area->id; ?>_yes">Yes</label>
                                             </div>
                                             <div class="radio-item">
-                                                <input type="radio" value="No" name="willingness_skill_<?= $area->id; ?>" id="willingness_skill_<?= $area->id; ?>_no">
+                                                <input type="radio" value="No" name="willingness_skill_<?= $area->id; ?>" id="willingness_skill_<?= $area->id; ?>_no" checked>
                                                 <label for="willingness_skill_<?= $area->id; ?>_no">No</label>
                                             </div>
                                         </div>
-					</div>
+                                    </div>
 
                                     <div class="form-group">
                                         <label class="form-label">Experience</label>
@@ -1608,38 +1836,191 @@
                                                 <label for="experience_skill_<?= $area->id; ?>_yes">Yes</label>
                                             </div>
                                             <div class="radio-item">
-                                                <input type="radio" value="No" name="experience_skill_<?= $area->id; ?>" id="experience_skill_<?= $area->id; ?>_no">
+                                                <input type="radio" value="No" name="experience_skill_<?= $area->id; ?>" id="experience_skill_<?= $area->id; ?>_no" checked>
                                                 <label for="experience_skill_<?= $area->id; ?>_no">No</label>
                                             </div>
                                         </div>
-					</div>	
+                                    </div> 
 
                                     <div class="form-group">
                                         <label for="ass_skill_<?= $area->id; ?>" class="form-label">Assessment</label>
                                         <select name="ass_skill_<?= $area->id; ?>" id="ass_skill_<?= $area->id; ?>" class="form-select">
-							<option value="N.A">N.A</option>
-							<option value="Poor">Poor</option>
-							<option value="Fair">Fair</option>
-							<option value="Good">Good</option>
-							<option value="Very Good">Very Good</option>
-							<option value="Excellent">Excellent</option>
-						</select>
-					</div>	
-					</div>
-						
+                                            <option value="N.A">N.A</option>
+                                            <option value="Poor">Poor</option>
+                                            <option value="Fair">Fair</option>
+                                            <option value="Good">Good</option>
+                                            <option value="Very Good">Very Good</option>
+                                            <option value="Excellent">Excellent</option>
+                                        </select>
+                                    </div> 
+                                </div>
+                                
                                 <div class="form-group exp_year" style="display:none;" id="exp_year_skill_<?= $area->id; ?>">
                                     <label for="expe_year_skill_<?= $area->id; ?>" class="form-label">Experience Year</label>
                                     <input class="form-input" name="expe_year_skill_<?= $area->id; ?>" value="" id="expe_year_skill_<?= $area->id; ?>" maxlength="50" type="text" autocomplete="off" placeholder="Enter years of experience">
                                 </div>
-                            </div>
 
                                 <div class="form-group">
                                     <label for="other_skill_<?= $area->id; ?>" class="form-label">Other Details</label>
                                     <input class="form-input" name="other_skill_<?= $area->id; ?>" value="" id="other_skill_<?= $area->id; ?>" maxlength="50" type="text" autocomplete="off" placeholder="Enter other details">
-					</div>
-					<?php 
-					    }
-					} ?>    
+                                </div>
+                                <?php } elseif ((int)$area->id === 6) { 
+                                    // Language Abilities (OTC) JSON UI
+                                    $language_options_otc = $wpdb->get_col("SELECT DISTINCT language FROM {$wpdb->prefix}maid_language_profiency ORDER BY language");
+                                    if (empty($language_options_otc)) { $language_options_otc = array('English','Mandarin','Indonesian/Malay','Cantonese','Arabic','Hindi','Tamil','Burmese','Tagalog','Thai'); }
+                                ?>
+                                <div class="form-group" style="grid-column: 1 / -1;">
+                                    <label class="form-label">Language Abilities</label>
+                                    <input type="hidden" name="other_skill_<?= $area->id; ?>" id="lang_json_skill_<?= $area->id; ?>" value=''>
+                                    <div id="language_rows_skill_<?= $area->id; ?>" class="language-rows">
+                                        <div class="form-row language-row" data-index="0" style="gap:8px; align-items:center;">
+                                            <div class="form-group" style="flex:1;">
+                                                <input type="text" list="language_options_skill_<?= $area->id; ?>" class="form-input language-name" placeholder="Language name" autocomplete="off">
+                                            </div>
+                                            <div class="form-group" style="width:220px;">
+                                                <select class="form-select skill-level">
+                                                    <option value="">Select level</option>
+                                                    <option value="Poor">Poor</option>
+                                                    <option value="Fair">Fair</option>
+                                                    <option value="Good">Good</option>
+                                                </select>
+                                            </div>
+                                            <button type="button" class="btn btn-secondary remove-language-row">Remove</button>
+                                        </div>
+                                    </div>
+                                    <datalist id="language_options_skill_<?= $area->id; ?>">
+                                        <?php foreach ($language_options_otc as $opt) { ?>
+                                            <option value="<?php echo esc_attr($opt); ?>"></option>
+                                        <?php } ?>
+                                    </datalist>
+                                    <button type="button" class="btn btn-primary" id="add_language_btn_skill_<?= $area->id; ?>" style="margin-top:8px;">Add Language</button>
+                                </div>
+                                <script type="text/javascript">
+                                (function($){
+                                    $(function(){
+                                        var areaId = <?= (int)$area->id; ?>;
+                                        var $rowsWrap = $('#language_rows_skill_' + areaId);
+                                        var $hidden = $('#lang_json_skill_' + areaId);
+                                        function serializeRows(){
+                                            var data = { languages: [] };
+                                            $rowsWrap.find('.language-row').each(function(){
+                                                var $row = $(this);
+                                                var name = $.trim($row.find('.language-name').val() || '');
+                                                var skill = $row.find('.skill-level').val() || '';
+                                                if(name !== '' || skill !== ''){
+                                                    data.languages.push({ name: name, skill: skill });
+                                                }
+                                            });
+                                            $hidden.val(JSON.stringify(data));
+                                        }
+                                        $('#add_language_btn_skill_' + areaId).on('click', function(){
+                                            var idx = $rowsWrap.find('.language-row').length;
+                                            var rowHtml = ''+
+                                                '<div class="form-row language-row" data-index="'+idx+'" style="gap:8px; align-items:center;">'+
+                                                    '<div class="form-group" style="flex:1;"><input type="text" list="language_options_skill_'+areaId+'" class="form-input language-name" placeholder="Language name" autocomplete="off"></div>'+
+                                                    '<div class="form-group" style="width:220px;"><select class="form-select skill-level">'+
+                                                        '<option value="">Select level</option>'+
+                                                        '<option value="Poor">Poor</option>'+
+                                                        '<option value="Fair">Fair</option>'+
+                                                        '<option value="Good">Good</option>'+
+                                                    '</select></div>'+
+                                                    '<button type="button" class="btn btn-secondary remove-language-row">Remove</button>'+
+                                                '</div>';
+                                            $rowsWrap.append(rowHtml);
+                                        });
+                                        $rowsWrap.on('click', '.remove-language-row', function(){
+                                            $(this).closest('.language-row').remove();
+                                        });
+                                        $('form').on('submit', function(){ serializeRows(); });
+                                    });
+                                })(jQuery);
+                                </script>
+                                <?php } elseif ($is_other_skills_otc) { ?>
+                                <?php
+                                    $preset_options_skill = array(
+                                        'tube_feeding' => 'TUBE FEEDING',
+                                        'insulin_injection' => 'INSULIN INJECTION',
+                                        'autistic' => 'AUTISTIC',
+                                        'stroke_patient' => 'STROKE PATIENT',
+                                        'dementia' => 'DEMENTIA',
+                                        'bedridden' => 'BEDRIDDEN',
+                                        'sewing' => 'SEWING',
+                                        'wheelchair' => 'WHEELCHAIR',
+                                        'mental_disability' => 'MENTAL DISABILITY',
+                                        'other' => 'OTHER SPECIAL NEEDS'
+                                    );
+                                ?>
+                                <div class="form-group" style="grid-column: 1 / -1;">
+                                    <label class="form-label">Other Skills (select all that apply)</label>
+                                    <input type="hidden" name="other_skill_<?= $area->id; ?>" id="other_skills_json_skill_<?= $area->id; ?>" value=''>
+                                    <div id="other_skills_container_skill_<?= $area->id; ?>" class="checkbox-group">
+                                        <?php foreach ($preset_options_skill as $okey => $olabel): ?>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" class="other-skill-checkbox-skill" data-key="<?php echo esc_attr($okey); ?>">
+                                            <span><?php echo esc_html($olabel); ?></span>
+                                        </label>
+                                        <?php endforeach; ?>
+                                    </div>
+                                    <div id="other_special_needs_wrap_skill_<?= $area->id; ?>" style="margin-top:10px; display:none;">
+                                        <label class="form-label" for="other_special_needs_input_skill_<?= $area->id; ?>">Please specify</label>
+                                        <input class="form-input" type="text" id="other_special_needs_input_skill_<?= $area->id; ?>" maxlength="100" value="" placeholder="Enter other special needs">
+                                    </div>
+                                </div>
+                                <script type="text/javascript">
+                                (function($){
+                                    $(function(){
+                                        var areaId = <?= (int)$area->id; ?>;
+                                        var $container = $('#other_skills_container_skill_' + areaId);
+                                        var $hidden = $('#other_skills_json_skill_' + areaId);
+                                        var $otherWrap = $('#other_special_needs_wrap_skill_' + areaId);
+                                        var $otherInput = $('#other_special_needs_input_skill_' + areaId);
+                                        $container.on('change', '.other-skill-checkbox-skill', function(){
+                                            var key = $(this).data('key');
+                                            if (key === 'other') { $otherWrap.toggle(this.checked); }
+                                        });
+                                        $('form').on('submit', function(){
+                                            var data = { other_skills: {}, other_text: '' };
+                                            $container.find('.other-skill-checkbox-skill').each(function(){
+                                                var key = $(this).data('key');
+                                                data.other_skills[key] = $(this).is(':checked');
+                                            });
+                                            data.other_text = $.trim($otherInput.val() || '');
+                                            $hidden.val(JSON.stringify(data));
+                                        });
+                                    });
+                                })(jQuery);
+                                </script>
+                                <?php } elseif ($is_care_pets_otc) { ?>
+                                <div class="form-group" style="grid-column: 1 / -1;">
+                                    <label class="form-label">Care of Pets</label>
+                                    <input type="hidden" name="other_skill_<?= $area->id; ?>" id="care_pets_json_skill_<?= $area->id; ?>" value=''>
+                                    <div id="care_pets_container_skill_<?= $area->id; ?>" class="checkbox-group">
+                                        <label class="checkbox-item"><input type="checkbox" class="care-pet-checkbox-skill" data-key="dog"><span>Dog</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" class="care-pet-checkbox-skill" data-key="cat"><span>Cat</span></label>
+                                    </div>
+                                </div>
+                                <script type="text/javascript">
+                                (function($){
+                                    $(function(){
+                                        var areaId = <?= (int)$area->id; ?>;
+                                        var $container = $('#care_pets_container_skill_' + areaId);
+                                        var $hidden = $('#care_pets_json_skill_' + areaId);
+                                        $('form').on('submit', function(){
+                                            var data = { care_pets: {} };
+                                            $container.find('.care-pet-checkbox-skill').each(function(){
+                                                var key = $(this).data('key');
+                                                data.care_pets[key] = $(this).is(':checked');
+                                            });
+                                            $hidden.val(JSON.stringify(data));
+                                        });
+                                    });
+                                })(jQuery);
+                                </script>
+                                <?php } ?>
+                            </div>
+                    <?php 
+                        }
+                    } ?>    
 	            </div>
 	        </div>
             
@@ -1741,7 +2122,7 @@
             <!-- Declaration -->
             <div class="form-group">
                 <div class="checkbox-item">
-                    <input type="checkbox" name="declaration" value="1" id="declaration" required>
+                    <input type="checkbox" name="declaration" value="1" id="declaration" data-required="true">
                     <label for="declaration" class="form-label required">I declare that all particulars given herein are true and accurate to the best of my knowledge.</label>
 	</div>
 	</div>
@@ -1783,8 +2164,36 @@
                 dateFormat: 'dd/mm/yy'
             });
 
+            // Initialize employment history date pickers
+            initEmploymentDatepickers(document);
+
         // Initialize chosen select and force width & styles
         jQuery(".stchosen").chosen({no_results_text: "Oops, nothing found!", width: "100%"});
+        
+        // Initialize error clearing for chosen dropdowns - consistent with Edit form
+        jQuery('.stchosen').on('change', function() {
+            var field = jQuery(this);
+            var fieldId = field.attr('id');
+            if (field.val() && field.val().trim() !== '') {
+                field.removeClass('error');
+                if (fieldId) {
+                    jQuery('#' + fieldId + '_chosen').removeClass('error');
+                }
+                // Also remove from any chosen container in same form group
+                field.closest('.form-group').find('.chosen-container').removeClass('error');
+                
+            }
+        });
+        
+        // Language proficiency is now optional - no error highlighting needed
+        
+        // Clear interview error highlighting when user checks any interview method
+        jQuery('input[name="tc_interview[]"]').on('change', function() {
+            if (jQuery('input[name="tc_interview[]"]:checked').length > 0) {
+                // Only remove error highlighting from the interview checkbox group specifically
+                jQuery('.interview-checkbox-group').removeClass('error-highlight');
+            }
+        });
 
         // Form validation and interactions
         initializeFormValidation();
@@ -1810,6 +2219,7 @@
         showStep(step);
         updateProgressBar(step);
     }
+    
 
     function showStep(step) {
         // Hide all steps
@@ -1846,14 +2256,18 @@
 		
 		// Clear previous error states
 		currentSection.find('.form-input, .form-textarea, .form-select, input[type="radio"], input[type="checkbox"]').removeClass('error');
+		currentSection.find('.chosen-container').removeClass('error');
 		
 		// Collect missing required fields and show a single popup
 		const missingFields = [];
 		const processedGroupNames = new Set();
 		
-		currentSection.find('[required]').each(function() {
+		// Check both required and data-required fields (excluding nationality which has custom validation)
+		currentSection.find('[required], [data-required="true"]').not('#nationality').each(function() {
 			const field = jQuery(this);
 			const type = (field.attr('type') || '').toLowerCase();
+			const fieldId = field.attr('id');
+			const fieldName = field.attr('name');
 			let fieldValid = true;
 			
 			if (type === 'checkbox' || type === 'radio') {
@@ -1889,6 +2303,17 @@
 				if (!value) {
 					fieldValid = false;
 					field.addClass('error');
+					
+					// For chosen dropdowns, also add error class to chosen container
+					if (fieldId && field.hasClass('stchosen')) {
+						const chosenContainer = jQuery(`#${fieldId}_chosen`);
+						if (chosenContainer.length > 0) {
+							chosenContainer.addClass('error');
+						} else {
+							// Fallback: find chosen container in same form group
+							field.closest('.form-group').find('.chosen-container').addClass('error');
+						}
+					}
 				}
 			}
 			
@@ -1938,6 +2363,11 @@
     function validatePersonalDetails() {
         let isValid = true;
         
+        // Custom nationality validation
+        if (!validateNationality()) {
+            isValid = false;
+        }
+        
         // Validate age (numeric only)
         const age = jQuery('#age').val();
         if (age && !/^\d+$/.test(age)) {
@@ -1957,6 +2387,49 @@
         return isValid;
     }
 
+    // Custom nationality validation function
+    function validateNationality() {
+        const nationalityField = jQuery('#nationality');
+        const nationalityValue = nationalityField.val();
+        
+        // Clear any existing error states
+        nationalityField.removeClass('error');
+        jQuery('#nationality_chosen').removeClass('error');
+        nationalityField.closest('.form-group').find('.chosen-container').removeClass('error');
+        
+        // Check if nationality is selected
+        if (!nationalityValue || nationalityValue.trim() === '' || nationalityValue === 'Select nationality') {
+            // Add error class to original field
+            nationalityField.addClass('error');
+            
+            // Add error class to chosen container
+            const chosenContainer = jQuery('#nationality_chosen');
+            if (chosenContainer.length > 0) {
+                chosenContainer.addClass('error');
+            } else {
+                // Fallback: find chosen container in form group
+                nationalityField.closest('.form-group').find('.chosen-container').addClass('error');
+            }
+            
+            // Show error message
+            showPopup('Please select a nationality', 'error', 4000);
+            
+            // Try to focus on chosen dropdown
+            setTimeout(function() {
+                const chosenSingle = jQuery('#nationality_chosen .chosen-single');
+                if (chosenSingle.length > 0) {
+                    chosenSingle.focus();
+                } else {
+                    nationalityField.focus();
+                }
+            }, 100);
+            
+            return false;
+        }
+        
+        return true;
+    }
+
     function validateFamilyMedical() {
         let isValid = true;
         
@@ -1968,6 +2441,36 @@
             jQuery('#my_number').addClass('error');
             showMessage('Your position number cannot be greater than total siblings', 'error');
             isValid = false;
+        }
+        
+        // Validate children fields
+        const numChildren = jQuery('#no_of_children').val();
+        const childrenAges = jQuery('#children_age').val();
+        
+        // If number of children is greater than 0, validate ages are provided
+        if (numChildren && parseInt(numChildren) > 0) {
+            if (!childrenAges || childrenAges.trim() === '') {
+                jQuery('#children_age').addClass('error');
+                showPopup('Please provide the ages of children when number of children is greater than 0', 'error', 4000);
+                isValid = false;
+            } else {
+                // Validate that the number of ages roughly matches number of children
+                const agesList = childrenAges.split(',').filter(age => age.trim() !== '');
+                if (agesList.length !== parseInt(numChildren)) {
+                    jQuery('#children_age').addClass('error');
+                    showPopup(`Please provide ${numChildren} age(s) separated by commas`, 'error', 4000);
+                    isValid = false;
+                }
+            }
+        }
+        
+        // If ages are provided but number of children is 0 or empty
+        if (childrenAges && childrenAges.trim() !== '') {
+            if (!numChildren || parseInt(numChildren) === 0) {
+                jQuery('#no_of_children').addClass('error');
+                showPopup('Please specify number of children when ages are provided', 'error', 4000);
+                isValid = false;
+            }
         }
         
         return isValid;
@@ -1989,7 +2492,33 @@
     }
 
     function validateSkillsLanguages() {
-        return true; // Add specific validation if needed
+        let isValid = true;
+        let errorMessages = [];
+        
+        // Clear previous error states
+        jQuery('.modern-table').removeClass('error-highlight');
+        jQuery('.interview-checkbox-group').removeClass('error-highlight');
+        
+        // Language proficiency is now optional - removed mandatory validation
+        
+        // Validate that at least one interview method is selected
+        const interviewSelected = jQuery('input[name="tc_interview[]"]:checked').length > 0;
+        if (!interviewSelected) {
+            errorMessages.push('Please select at least one interview method');
+            // Only highlight the interview checkbox group specifically
+            jQuery('.interview-checkbox-group').addClass('error-highlight');
+            isValid = false;
+        }
+        
+        // Show combined error message if there are any errors
+        if (!isValid) {
+            const errorMessage = errorMessages.length > 1 
+                ? 'Please complete the following:\n• ' + errorMessages.join('\n• ')
+                : errorMessages[0];
+            showPopup(errorMessage, 'error', 5000);
+        }
+        
+        return isValid;
     }
 
     function validateFinalStep() {
@@ -2084,17 +2613,10 @@
             }
         });
 
-        // Marital status change
+        // Marital status change - children fields are now always visible
         jQuery("#marrital_status").change(function() {
-            if (this.value == 1) {
-                jQuery('#no_of_children').val('');
-                jQuery("#field_no_of_children").hide();
-                jQuery('#children_age').val('');
-                jQuery("#field_children_age").hide();
-            } else {
-                jQuery("#field_no_of_children").show();
-                jQuery("#field_children_age").show();
-            }
+            // Children fields are now always visible regardless of marital status
+            // Users can enter 0 for number of children if they have none
         });
 
         // Age validation (numeric only)
@@ -2135,6 +2657,12 @@
                 }
             }
         });
+
+        // Children fields validation and error clearing
+        jQuery('#no_of_children, #children_age').on('input', function() {
+            // Clear error styling when user starts typing
+            jQuery('#no_of_children, #children_age').removeClass('error');
+        });
     }
 
     // File Upload Functions
@@ -2157,22 +2685,67 @@
         }
     }
 
+    // Initialize date pickers for employment history (same as edit maid)
+    function initEmploymentDatepickers(scope){
+        jQuery(scope).find('.emp-from, .emp-to').each(function(){
+            jQuery(this).datepicker({
+                autoclose: true,
+                changeMonth: true,
+                changeYear: true,
+                maxDate: "today",
+                yearRange: "-100:+00",
+                dateFormat: 'dd/mm/yy'
+            });
+        });
+    }
+
     // Dynamic Section Functions
-    function add_employment_history() {
-        const container = jQuery("#employment_history_container");
-        const newSection = jQuery("#employment_history").clone();
-        
-        // Clear values
-        newSection.find('input, textarea, select').val('');
-        
-        // Add remove button
-        newSection.append('<button type="button" class="remove-btn" onclick="removeSection(this)"><span>×</span></button>');
-        
-        // Add to container
-        container.append(newSection);
-        
-        // Reinitialize chosen
-        newSection.find('.stchosen').chosen({no_results_text: "Oops, nothing found!"});
+    function add_employment_history(){
+        var countries = [
+            'SINGAPORE','MALAYSIA','INDONESIA','TAIWAN','HONG KONG','MIDDLE EAST','BRUNEI','INDIA','PHILIPPINES','MYANMAR','SRI LANKA','BANGLADESH','OTHERS'
+        ];
+        var countryOptions = '<option value="">Select country<\/option>';
+        for(var i=0;i<countries.length;i++){
+            countryOptions += '<option value="'+countries[i]+'">'+countries[i]+'<\/option>';
+        }
+        var tpl = ''+
+        '<div class="employment-record">'+
+        '  <div class="form-grid">'+
+        '    <div class="form-group">'+
+        '      <label class="form-label" for="from_date">From Date<\/label>'+
+        '      <input class="form-input emp-from" name="from_date[]" type="text" placeholder="DD/MM/YYYY">'+
+        '    <\/div>'+
+        '    <div class="form-group">'+
+        '      <label class="form-label" for="to_date">To Date<\/label>'+
+        '      <input class="form-input emp-to" name="to_date[]" type="text" placeholder="DD/MM/YYYY">'+
+        '    <\/div>'+
+        '    <div class="form-group">'+
+        '      <label class="form-label" for="country">Country<\/label>'+
+        '      <select class="form-select emp-country" name="country[]">'+countryOptions+'<\/select>'+
+        '    <\/div>'+
+        '    <div class="form-group" style="grid-column: 1 / -1;">'+
+        '      <label class="form-label" for="employer">Employer<\/label>'+
+        '      <input class="form-input" name="employer[]" type="text" placeholder="Enter employer name">'+
+        '    <\/div>'+
+        '    <div class="form-group" style="grid-column: 1 / -1;">'+
+        '      <label class="form-label" for="work_duties">Work Duties<\/label>'+
+        '      <textarea class="form-textarea" name="work_duties[]" rows="3" placeholder="Describe work duties"><\/textarea>'+
+        '    <\/div>'+
+        '    <div class="form-group" style="grid-column: 1 / -1;">'+
+        '      <label class="form-label" for="remark_emp">Remark<\/label>'+
+        '      <textarea class="form-textarea" name="remark_emp[]" rows="2" placeholder="Remark (optional)"><\/textarea>'+
+        '    <\/div>'+
+        '  <\/div>'+
+        '  <button type="button" class="remove-record-btn" onclick="removeEmploymentHistory(this)"><span>×<\/span><\/button>'+
+        '<\/div>';
+
+        var $node = jQuery(tpl);
+        jQuery('#employment_history_container').append($node);
+        initEmploymentDatepickers($node);
+    }
+
+    function removeEmploymentHistory(btn){
+        jQuery(btn).closest('.employment-record').remove();
     }
 
     function add_feedback() {
@@ -2210,24 +2783,37 @@
 
     // Form submission
     jQuery('#maidedit').on('submit', function(e) {
-        console.log('Form submission started');
+        // Debug: Log employment history data before submission
+        console.log('Form submission - Employment History data:');
+        console.log('from_date:', jQuery('input[name="from_date[]"]').map(function(){ return jQuery(this).val(); }).get());
+        console.log('to_date:', jQuery('input[name="to_date[]"]').map(function(){ return jQuery(this).val(); }).get());
+        console.log('country:', jQuery('select[name="country[]"]').map(function(){ return jQuery(this).val(); }).get());
+        console.log('employer:', jQuery('input[name="employer[]"]').map(function(){ return jQuery(this).val(); }).get());
+        console.log('work_duties:', jQuery('textarea[name="work_duties[]"]').map(function(){ return jQuery(this).val(); }).get());
+        console.log('remark_emp:', jQuery('textarea[name="remark_emp[]"]').map(function(){ return jQuery(this).val(); }).get());
         
-        // Temporarily disable validation for testing
-        let allValid = true;
-        /*
         // Validate all steps before submission
-        for (let step = 1; step <= totalSteps; step++) {
-            if (!validateCurrentStep(step)) {
-                allValid = false;
-                showStep(step); // Show the step with errors
-                break;
+        let allValid = true;
+        
+        // First, specifically validate nationality
+        if (!validateNationality()) {
+            allValid = false;
+            showStep(1); // Show step 1 where nationality is
+        }
+        
+        // Then validate all other steps
+        if (allValid) {
+            for (let step = 1; step <= totalSteps; step++) {
+                if (!validateCurrentStep(step)) {
+                    allValid = false;
+                    showStep(step); // Show the step with errors
+                    break;
+                }
             }
         }
-        */
         
         if (!allValid) {
             e.preventDefault();
-            console.log('Form validation failed');
             return false;
         }
         
@@ -2430,17 +3016,10 @@
 				}
 			});
 
-        // Marital status change handler
+        // Marital status change handler - children fields are now always visible
         jQuery("#marrital_status").change(function(){
-            if(this.value == 1) {
-                jQuery('#no_of_children').val('');
-                jQuery("#field_no_of_children").css("display", "none");
-                jQuery('#children_age').val('');
-                jQuery("#field_children_age").css("display", "none");
-            } else {
-                jQuery("#field_no_of_children").css("display", "inline");
-                jQuery("#field_children_age").css("display", "inline");
-            }
+            // Children fields are now always visible regardless of marital status
+            // Users can enter 0 for number of children if they have none
         });
 
         // Age validation - numbers only
@@ -2479,8 +3058,8 @@
         // Family Details
         jQuery('#no_of_siblings').val('3');
         jQuery('#my_number').val('2');
-        jQuery('#no_of_children').val('1');
-        jQuery('#children_age').val('8');
+        jQuery('#no_of_children').val('2');
+        jQuery('#children_age').val('5, 8');
 
         // Medical Details
         jQuery('#allergies').val('None');
@@ -2593,9 +3172,7 @@
         // Trigger chosen updates
         jQuery('.stchosen').trigger('chosen:updated');
 
-        // Show children fields since marital status is married
-        jQuery('#field_no_of_children').show();
-        jQuery('#field_children_age').show();
+        // Children fields are now always visible - no need to show/hide them
     }
 	</script>
 

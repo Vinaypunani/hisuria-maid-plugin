@@ -18,7 +18,7 @@ function maids_install(){
 		`code` varchar(15) NOT NULL,
 		  `name` varchar(100) NOT NULL,
 		  `date_of_birth` datetime NOT NULL,
-		  `place_of_birth` datetime NOT NULL,
+		  `place_of_birth` varchar(255) NOT NULL,
         `height` smallint(5) UNSIGNED NOT NULL,
 		  `weight` tinyint(3) UNSIGNED NOT NULL,
 		  `nationality` varchar(50) NOT NULL,
@@ -186,6 +186,20 @@ function maids_add_to_menu()
 		'manage_options',
 		'add-spec-column',
 		'maids_tool_add_spec_column_page'
+	);
+	add_management_page(
+		'Field Value Replacer',
+		'Replace Field Values',
+		'manage_options',
+		'replace-field-values',
+		'maids_tool_replace_field_values_page'
+	);
+	add_management_page(
+		'Fix Nationality Case',
+		'Fix Nationality Case',
+		'manage_options',
+		'fix-nationality-case',
+		'maids_tool_fix_nationality_case_page'
 	);
 }
 
@@ -546,9 +560,20 @@ function maids_HandleUploadFile()
                 	 'declaration' => $declaration,
                 	 'remark' => $remark, 
                 	 'modified_by' => get_current_user_id(),
-                	 'passport_image' => $passport_logo_fr
+                	 'passport_image' => $passport_logo_fr,
+                	 'training_centre' => $training_centre,
+                	 'certified_no' => $certified_no,
+                	 'tc_interview' => $tc_interview,
+                	 'rest_day' => $rest_day,
+                	 'other_remark' => $other_remark
                 	  );        
+	               error_log('Attempting to insert maid data into table: ' . $table_name);
+	               error_log('Data array: ' . print_r($data, true));
 	               $inserted = $wpdb->insert( $table_name, $data);
+	               error_log('Insert result: ' . ($inserted ? 'success' : 'failed'));
+	               if (!$inserted) {
+	                   error_log('Database error: ' . $wpdb->last_error);
+	               }
 			
             if($inserted){
 				try {
@@ -699,7 +724,7 @@ function maids_HandleUploadFile()
 	        
 						$wpdb->insert( 'wp_maid_skills', $skill_array);*/
                         
-                        if($willing != "" || $experience != "") {
+                        if($willing != "" || $experience != "" || (in_array((int)$skill_id, $json_only_skill_ids, true) && $other != "")) {
 						$sql = "INSERT INTO `wp_maid_skills` (`maid_id`, `skill_id`,`other`,`willing`,`experience`,`exp_year`,`assessment`) VALUES ('".$maidid."','".$skill_id."','".$other."','".$willing."','".$experience."','".$exp_year."','".$assessment."')"; 
                             
                             $wpdb->get_results($sql);
@@ -712,7 +737,7 @@ function maids_HandleUploadFile()
 						$exp_year1 = isset($_REQUEST['expe_year_skill_'.$i]) ? $_REQUEST['expe_year_skill_'.$i] : '';
 						$assessment1 = isset($_REQUEST['ass_skill_'.$i]) ? $_REQUEST['ass_skill_'.$i] : '';
 
-		                if($willing1 != "" || $experience1 != "") {
+                        if($willing1 != "" || $experience1 != "" || (in_array((int)$skill_id, $json_only_skill_ids, true) && $other1 != "")) {
 						$sql = "INSERT INTO `wp_maid_skills_otc` (`maid_id`, `skill_id`,`other`,`willing`,`experience`,`exp_year`,`assessment`) VALUES ('".$maidid."','".$skill_id."','".$other1."','".$willing1."','".$experience1."','".$exp_year1."','".$assessment1."')"; 
                             
                             $wpdb->get_results($sql);
@@ -1729,6 +1754,25 @@ function maids_ensure_tables_exist() {
 		PRIMARY KEY (`id`)
 	) $charset_collate;";
 
+	// Create commune table
+	$commune_table = $wpdb->prefix . 'commune';
+	$sql .= "CREATE TABLE IF NOT EXISTS `{$commune_table}` (
+		`id` int(11) NOT NULL AUTO_INCREMENT,
+		`name` varchar(255) NOT NULL,
+		`is_deleted` tinyint(1) NOT NULL DEFAULT 0,
+		PRIMARY KEY (`id`)
+	) $charset_collate;";
+
+	// Create maid_cat table
+	$maid_cat_table = $wpdb->prefix . 'maid_cat';
+	$sql .= "CREATE TABLE IF NOT EXISTS `{$maid_cat_table}` (
+		`id` int(11) NOT NULL AUTO_INCREMENT,
+		`name_en` varchar(255) NOT NULL,
+		`name_` varchar(255) NOT NULL,
+		`is_deleted` tinyint(1) NOT NULL DEFAULT 0,
+		PRIMARY KEY (`id`)
+	) $charset_collate;";
+
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
     dbDelta( $sql );
 
@@ -1737,6 +1781,18 @@ function maids_ensure_tables_exist() {
     $heightCol = $wpdb->get_row( $wpdb->prepare("SHOW COLUMNS FROM `$st_maid_table` LIKE %s", 'height') );
     if ( $heightCol && isset($heightCol->Type) && stripos($heightCol->Type, 'tinyint') !== false ) {
         $wpdb->query("ALTER TABLE `$st_maid_table` MODIFY `height` SMALLINT(5) UNSIGNED NOT NULL");
+    }
+    
+    // Fix image field length to accommodate full URLs
+    $imageCol = $wpdb->get_row( $wpdb->prepare("SHOW COLUMNS FROM `$st_maid_table` LIKE %s", 'image') );
+    if ( $imageCol && isset($imageCol->Type) && stripos($imageCol->Type, 'varchar(100)') !== false ) {
+        $wpdb->query("ALTER TABLE `$st_maid_table` MODIFY `image` VARCHAR(500) NOT NULL");
+    }
+    
+    // Fix passport_image field length to accommodate full URLs
+    $passportImageCol = $wpdb->get_row( $wpdb->prepare("SHOW COLUMNS FROM `$st_maid_table` LIKE %s", 'passport_image') );
+    if ( $passportImageCol && isset($passportImageCol->Type) && stripos($passportImageCol->Type, 'varchar(100)') !== false ) {
+        $wpdb->query("ALTER TABLE `$st_maid_table` MODIFY `passport_image` VARCHAR(500) NOT NULL");
     }
 }
 
@@ -1821,6 +1877,305 @@ function maids_maybe_add_care_pets_column() {
 add_action('plugins_loaded', 'maids_maybe_add_care_pets_column');
 register_deactivation_hook(__FILE__, 'maids_deactivation');
 
+// Admin Tools: Field Value Replacer - Replace field values in st_maid table
+function maids_tool_replace_field_values_page() {
+    if (!current_user_can('manage_options')) { 
+        wp_die(__('You do not have sufficient permissions to access this page.')); 
+    }
+    
+    global $wpdb;
+    $table = $wpdb->prefix . 'st_maid';
+    $success_message = '';
+    $error_message = '';
+    
+    // Available fields for replacement
+    $available_fields = array(
+        'nationality' => 'Nationality',
+        'religion' => 'Religion',
+        'education' => 'Education',
+        'marrital_status' => 'Marital Status',
+        'current_status' => 'Current Status'
+    );
+    
+    if (isset($_POST['do_replace_field_value']) && wp_verify_nonce($_POST['field_replace_nonce'], 'replace_field_values')) {
+        $field_name = sanitize_text_field($_POST['field_name']);
+        $find_value = sanitize_text_field($_POST['find_value']);
+        $replace_value = sanitize_text_field($_POST['replace_value']);
+        
+        // Validate inputs
+        if (empty($field_name) || !array_key_exists($field_name, $available_fields)) {
+            $error_message = 'Invalid field selected.';
+        } elseif (empty($find_value)) {
+            $error_message = 'Find value cannot be empty.';
+        } elseif (empty($replace_value)) {
+            $error_message = 'Replace value cannot be empty.';
+        } else {
+            // Check how many records would be affected
+            $count_query = $wpdb->prepare("SELECT COUNT(*) FROM `$table` WHERE `$field_name` = %s", $find_value);
+            $affected_count = $wpdb->get_var($count_query);
+            
+            if ($affected_count > 0) {
+                // Perform the replacement
+                $update_result = $wpdb->update(
+                    $table,
+                    array($field_name => $replace_value),
+                    array($field_name => $find_value),
+                    array('%s'),
+                    array('%s')
+                );
+                
+                if ($update_result !== false) {
+                    $success_message = sprintf(
+                        'Successfully updated %d record(s). Changed "%s" to "%s" in the %s field.',
+                        $affected_count,
+                        esc_html($find_value),
+                        esc_html($replace_value),
+                        esc_html($available_fields[$field_name])
+                    );
+                } else {
+                    $error_message = 'Database update failed: ' . $wpdb->last_error;
+                }
+            } else {
+                $error_message = sprintf('No records found with "%s" in the %s field.', esc_html($find_value), esc_html($available_fields[$field_name]));
+            }
+        }
+    }
+    
+    // Display the admin page
+    echo '<div class="wrap">';
+    echo '<h1>Replace Field Values</h1>';
+    echo '<p>This tool allows you to find and replace values in specific fields of the maids database.</p>';
+    
+    // Show success/error messages
+    if ($success_message) {
+        echo '<div class="updated notice"><p>' . $success_message . '</p></div>';
+    }
+    if ($error_message) {
+        echo '<div class="error notice"><p>' . esc_html($error_message) . '</p></div>';
+    }
+    
+    // Preview current field values
+    echo '<div class="card" style="margin: 20px 0; padding: 15px;">';
+    echo '<h2>Current Field Values Preview</h2>';
+    echo '<p>Here are some current values in each field to help you identify what needs to be replaced:</p>';
+    
+    foreach ($available_fields as $field_key => $field_label) {
+        $sample_values = $wpdb->get_results($wpdb->prepare(
+            "SELECT DISTINCT `$field_key` as value, COUNT(*) as count 
+             FROM `$table` 
+             WHERE `$field_key` IS NOT NULL AND `$field_key` != '' 
+             GROUP BY `$field_key` 
+             ORDER BY count DESC 
+             LIMIT 10"
+        ));
+        
+        if ($sample_values) {
+            echo '<h4>' . esc_html($field_label) . ':</h4>';
+            echo '<ul style="margin-left: 20px;">';
+            foreach ($sample_values as $value) {
+                echo '<li><strong>' . esc_html($value->value) . '</strong> (' . esc_html($value->count) . ' records)</li>';
+            }
+            echo '</ul>';
+        }
+    }
+    echo '</div>';
+    
+    // Main form
+    echo '<form method="post" style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 4px;">';
+    wp_nonce_field('replace_field_values', 'field_replace_nonce');
+    
+    echo '<table class="form-table">';
+    
+    // Field selection
+    echo '<tr>';
+    echo '<th scope="row"><label for="field_name">Select Field</label></th>';
+    echo '<td>';
+    echo '<select name="field_name" id="field_name" class="regular-text" required>';
+    echo '<option value="">-- Select Field --</option>';
+    foreach ($available_fields as $field_key => $field_label) {
+        $selected = (isset($_POST['field_name']) && $_POST['field_name'] === $field_key) ? 'selected' : '';
+        echo '<option value="' . esc_attr($field_key) . '" ' . $selected . '>' . esc_html($field_label) . '</option>';
+    }
+    echo '</select>';
+    echo '<p class="description">Choose which field you want to update.</p>';
+    echo '</td>';
+    echo '</tr>';
+    
+    // Find value
+    echo '<tr>';
+    echo '<th scope="row"><label for="find_value">Find Value</label></th>';
+    echo '<td>';
+    echo '<input type="text" name="find_value" id="find_value" class="regular-text" value="' . (isset($_POST['find_value']) ? esc_attr($_POST['find_value']) : '') . '" required>';
+    echo '<p class="description">Enter the current value you want to replace (case-sensitive).</p>';
+    echo '</td>';
+    echo '</tr>';
+    
+    // Replace value
+    echo '<tr>';
+    echo '<th scope="row"><label for="replace_value">Replace With</label></th>';
+    echo '<td>';
+    echo '<input type="text" name="replace_value" id="replace_value" class="regular-text" value="' . (isset($_POST['replace_value']) ? esc_attr($_POST['replace_value']) : '') . '" required>';
+    echo '<p class="description">Enter the new value to replace with.</p>';
+    echo '</td>';
+    echo '</tr>';
+    
+    echo '</table>';
+    
+    echo '<p class="submit">';
+    echo '<button type="submit" class="button button-primary" name="do_replace_field_value" value="1" onclick="return confirm(\'Are you sure you want to replace these values? This action cannot be undone!\')">Replace Values</button>';
+    echo '</p>';
+    
+    echo '</form>';
+    
+    echo '<div class="card" style="margin: 20px 0; padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7;">';
+    echo '<h3>⚠️ Important Notes:</h3>';
+    echo '<ul>';
+    echo '<li><strong>Backup your database</strong> before using this tool.</li>';
+    echo '<li>This operation <strong>cannot be undone</strong>.</li>';
+    echo '<li>The replacement is <strong>case-sensitive</strong>.</li>';
+    echo '<li>Only exact matches will be replaced.</li>';
+    echo '<li>A preview of current values is shown above to help you identify what needs to be replaced.</li>';
+    echo '</ul>';
+    echo '</div>';
+    
+    echo '</div>';
+}
+
+// Admin Tools: Fix Nationality Case - Standardize nationality field formatting
+function maids_tool_fix_nationality_case_page() {
+    if (!current_user_can('manage_options')) { 
+        wp_die(__('You do not have sufficient permissions to access this page.')); 
+    }
+    
+    global $wpdb;
+    $table = $wpdb->prefix . 'st_maid';
+    
+    echo '<div class="wrap">';
+    echo '<h1>🔧 Fix Nationality Case</h1>';
+    echo '<p>This tool standardizes the nationality field by capitalizing the first letter and making the rest lowercase.</p>';
+    
+    // Check if we should run the update
+    if (isset($_POST['run_nationality_fix']) && wp_verify_nonce($_POST['nationality_fix_nonce'], 'fix_nationality_case')) {
+        echo '<div class="notice notice-info"><p>📊 Running Update...</p></div>';
+        
+        try {
+            // First, let's see what we're working with
+            $before_query = "SELECT nationality, COUNT(*) as count FROM `$table` WHERE nationality IS NOT NULL AND nationality != '' GROUP BY nationality ORDER BY nationality";
+            $before_results = $wpdb->get_results($before_query);
+            
+            echo '<h3>📋 Current Nationality Values:</h3>';
+            echo '<table class="wp-list-table widefat fixed striped">';
+            echo '<thead><tr><th>Current Value</th><th>Count</th></tr></thead>';
+            echo '<tbody>';
+            
+            foreach ($before_results as $row) {
+                echo '<tr><td>' . esc_html($row->nationality) . '</td><td>' . $row->count . '</td></tr>';
+            }
+            echo '</tbody></table>';
+            
+            // Run the update query
+            $update_query = "UPDATE `$table` 
+                            SET nationality = CONCAT(
+                                UPPER(LEFT(nationality, 1)),
+                                LOWER(SUBSTRING(nationality, 2))
+                            )
+                            WHERE nationality IS NOT NULL AND nationality != ''";
+            
+            $affected_rows = $wpdb->query($update_query);
+            
+            if ($affected_rows === false) {
+                echo '<div class="notice notice-error"><p>❌ <strong>Error:</strong> ' . esc_html($wpdb->last_error) . '</p></div>';
+            } else {
+                echo '<div class="notice notice-success"><p>✅ <strong>Success!</strong> Updated ' . $affected_rows . ' records.</p></div>';
+                
+                // Show the results after update
+                $after_results = $wpdb->get_results($before_query);
+                
+                echo '<h3>📋 Updated Nationality Values:</h3>';
+                echo '<table class="wp-list-table widefat fixed striped">';
+                echo '<thead><tr><th>Updated Value</th><th>Count</th></tr></thead>';
+                echo '<tbody>';
+                
+                foreach ($after_results as $row) {
+                    echo '<tr><td>' . esc_html($row->nationality) . '</td><td>' . $row->count . '</td></tr>';
+                }
+                echo '</tbody></table>';
+            }
+            
+        } catch (Exception $e) {
+            echo '<div class="notice notice-error"><p>❌ <strong>Database Error:</strong> ' . esc_html($e->getMessage()) . '</p></div>';
+        }
+        
+    } else {
+        // Show preview mode
+        echo '<h2>👀 Preview Mode</h2>';
+        
+        try {
+            // Show current nationality values
+            $preview_query = "SELECT nationality, COUNT(*) as count FROM `$table` WHERE nationality IS NOT NULL AND nationality != '' GROUP BY nationality ORDER BY nationality";
+            $preview_results = $wpdb->get_results($preview_query);
+            
+            echo '<h3>📋 Current Nationality Values:</h3>';
+            echo '<table class="wp-list-table widefat fixed striped">';
+            echo '<thead><tr><th>Current Value</th><th>Will Become</th><th>Count</th></tr></thead>';
+            echo '<tbody>';
+            
+            foreach ($preview_results as $row) {
+                $current = $row->nationality;
+                $will_become = ucfirst(strtolower($current));
+                $highlight_class = ($current !== $will_become) ? 'style="background-color: #fff3cd;"' : '';
+                
+                echo "<tr $highlight_class>";
+                echo '<td>' . esc_html($current) . '</td>';
+                echo '<td>' . esc_html($will_become) . '</td>';
+                echo '<td>' . $row->count . '</td>';
+                echo '</tr>';
+            }
+            echo '</tbody></table>';
+            
+            echo '<p><strong>Note:</strong> Highlighted rows show values that will be changed.</p>';
+            
+            // Show the actual SQL command that will be executed
+            echo '<h3>🔍 SQL Command to be executed:</h3>';
+            echo '<pre style="background: #f1f1f1; padding: 15px; border-left: 4px solid #0073aa;">';
+            echo "UPDATE `$table`\n";
+            echo "SET nationality = CONCAT(\n";
+            echo "    UPPER(LEFT(nationality, 1)),\n";
+            echo "    LOWER(SUBSTRING(nationality, 2))\n";
+            echo ")\n";
+            echo "WHERE nationality IS NOT NULL AND nationality != '';";
+            echo '</pre>';
+            
+            echo '<div class="notice notice-warning">';
+            echo '<h3>⚠️ Important:</h3>';
+            echo '<ul>';
+            echo '<li>This will update the nationality field for ALL records in the maid table</li>';
+            echo '<li>Make sure you have a database backup before proceeding</li>';
+            echo '<li>This action cannot be undone easily</li>';
+            echo '</ul>';
+            echo '</div>';
+            
+            echo '<form method="post" style="margin-top: 30px;">';
+            wp_nonce_field('fix_nationality_case', 'nationality_fix_nonce');
+            echo '<p>';
+            echo '<input type="submit" name="run_nationality_fix" class="button button-primary" value="🚀 Run Update" onclick="return confirm(\'Are you sure you want to update all nationality records? This action cannot be undone easily.\');">';
+            echo '</p>';
+            echo '</form>';
+            
+        } catch (Exception $e) {
+            echo '<div class="notice notice-error"><p>❌ <strong>Database Error:</strong> ' . esc_html($e->getMessage()) . '</p></div>';
+        }
+    }
+    
+    echo '<hr>';
+    echo '<p><small>📝 <strong>Tool created for:</strong> Standardizing nationality field case formatting</small></p>';
+    echo '<p><small>🕒 <strong>Generated:</strong> ' . date('Y-m-d H:i:s') . '</small></p>';
+    echo '</div>';
+}
+
 // Ensure tables exist on plugin load
 add_action('init', 'maids_ensure_tables_exist');
+
+// Also ensure tables exist on admin init for immediate availability
+add_action('admin_init', 'maids_ensure_tables_exist');
 register_activation_hook( __FILE__, 'add_supplier_role_activation' );

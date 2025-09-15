@@ -85,6 +85,20 @@
     cursor: pointer;
 }
 
+/* Error styles for form fields */
+.form-input.error,
+.form-textarea.error,
+.form-select.error {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Chosen dropdown error styles - consistent with form inputs */
+.chosen-container.error .chosen-single {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
 .form-textarea {
     width: 100%;
     padding: 10px 16px;
@@ -1039,6 +1053,12 @@
     margin-top: 10px;
 }
 
+/* Hide Work Areas and Work Experience sections */
+.work-areas-section,
+.work-experience-section {
+    display: none !important;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .form-grid {
@@ -1297,7 +1317,14 @@ input[readonly].passport_logo_fr{background: #fff;}
 			</div>
 			<div class="form-group">
 				<label class="form-label" for="nationality">Nationality <span class="required">*</span></label>
-				<input class="form-input" name="nationality" value="<?php echo $row->nationality; ?>" id="nationality" maxlength="50" type="text" required placeholder="Enter nationality">			
+				<select name="nationality" id="nationality" class="form-select stchosen chosen-select" data-required="true">
+					<option value="">Select nationality</option>
+					<option value="Indonesian" <?php echo ($row->nationality == 'Indonesian') ? 'selected' : ''; ?>>Indonesian</option>
+					<option value="Philippines" <?php echo ($row->nationality == 'Philippines') ? 'selected' : ''; ?>>Philippines</option>
+					<option value="Myanmar" <?php echo ($row->nationality == 'Myanmar') ? 'selected' : ''; ?>>Myanmar</option>
+					<option value="Indian" <?php echo ($row->nationality == 'Indian') ? 'selected' : ''; ?>>Indian</option>
+					<option value="Sri Lankan" <?php echo ($row->nationality == 'Sri Lankan') ? 'selected' : ''; ?>>Sri Lankan</option>
+				</select>			
 			</div>
 			<div class="form-group" style="grid-column: 1 / -1;">
 				<label class="form-label" for="address">Address</label>
@@ -1386,24 +1413,24 @@ input[readonly].passport_logo_fr{background: #fff;}
 			</div>
 			<div class="section-content">
 				<div class="form-grid">
-					<div <?php if($row->marrital_status == '1'){ echo 'style="display:none;"';} ?> class="form-group" id="field_no_of_children">
+					<div class="form-group">
 						<label class="form-label" for="no_of_children">Number of Children</label>
-						<input class="form-input" name="no_of_children" value="<?php echo !empty($row->no_of_children)?$row->no_of_children:''; ?>" id="no_of_children" type="number" min="0" placeholder="Enter number of children">		
+						<input class="form-input" name="no_of_children" value="<?php echo !empty($row->no_of_children)?$row->no_of_children:''; ?>" id="no_of_children" type="number" min="0" max="20" step="1" placeholder="Enter number of children (0 if none)">		
 					</div>
 
-					<div <?php if($row->marrital_status == '1'){ echo 'style="display:none;"';} ?> class="form-group" id="field_children_age">
-						<label class="form-label" for="children_age">Children's Ages</label>
-						<input class="form-input" name="children_age" value="<?php echo !empty($row->children_age)?$row->children_age:''; ?>" id="children_age" type="text" placeholder="e.g., 5, 7, 12">		
+					<div class="form-group">
+						<label class="form-label" for="children_age">Age(s) of Children (If Any)</label>
+						<input class="form-input" name="children_age" value="<?php echo !empty($row->children_age)?$row->children_age:''; ?>" id="children_age" type="text" maxlength="100" placeholder="e.g., 5, 8, 12 (separate ages with commas)">		
 					</div>
 
 					<div class="form-group">
 						<label class="form-label" for="no_of_siblings">Number of Siblings</label>
-						<input class="form-input" name="no_of_siblings" value="<?php echo !empty($row->no_of_siblings)?$row->no_of_siblings:''; ?>" id="no_of_siblings" type="number" min="0" placeholder="Enter number of siblings">		
+						<input class="form-input" name="no_of_siblings" value="<?php echo !empty($row->no_of_siblings)?$row->no_of_siblings:''; ?>" id="no_of_siblings" type="number" min="0" max="20" step="1" placeholder="Enter number of siblings">		
 					</div>
 
 					<div class="form-group">
 						<label class="form-label" for="my_number">Birth Order</label>
-						<input class="form-input" name="my_number" value="<?php echo !empty($row->my_number)?$row->my_number:''; ?>" id="my_number" type="number" min="1" placeholder="Enter your position among siblings">		
+						<input class="form-input" name="my_number" value="<?php echo !empty($row->my_number)?$row->my_number:''; ?>" id="my_number" type="number" min="1" max="20" step="1" placeholder="Enter your position among siblings">		
 					</div>
 				</div>
 			</div>
@@ -1455,7 +1482,7 @@ input[readonly].passport_logo_fr{background: #fff;}
                                         <label for="mental_illness_yes">Yes</label>
                                     </div>
                                     <div class="medical-option">
-                                        <input type="radio" name="mental_illness" value="0" id="mental_illness_no" <?php if($row->mental_illness == 0) { echo "checked"; } ?>>
+                                        <input type="radio" name="mental_illness" value="0" id="mental_illness_no" <?php if($row->mental_illness == 0 || is_null($row->mental_illness)) { echo "checked"; } ?>>
                                         <label for="mental_illness_no">No</label>
                                     </div>
                                 </div>
@@ -1469,7 +1496,7 @@ input[readonly].passport_logo_fr{background: #fff;}
                                         <label for="epilepsy_yes">Yes</label>
                                     </div>
                                     <div class="medical-option">
-                                        <input type="radio" name="epilepsy" value="0" id="epilepsy_no" <?php if($row->epilepsy == 0) { echo "checked"; } ?>>
+                                        <input type="radio" name="epilepsy" value="0" id="epilepsy_no" <?php if($row->epilepsy == 0 || is_null($row->epilepsy)) { echo "checked"; } ?>>
                                         <label for="epilepsy_no">No</label>
                                     </div>
                                 </div>
@@ -1483,7 +1510,7 @@ input[readonly].passport_logo_fr{background: #fff;}
                                         <label for="asthma_yes">Yes</label>
                                     </div>
                                     <div class="medical-option">
-                                        <input type="radio" name="asthma" value="0" id="asthma_no" <?php if($row->asthma == 0) { echo "checked"; } ?>>
+                                        <input type="radio" name="asthma" value="0" id="asthma_no" <?php if($row->asthma == 0 || is_null($row->asthma)) { echo "checked"; } ?>>
                                         <label for="asthma_no">No</label>
                                     </div>
                                 </div>
@@ -1497,7 +1524,7 @@ input[readonly].passport_logo_fr{background: #fff;}
                                         <label for="diabetas_yes">Yes</label>
                                     </div>
                                     <div class="medical-option">
-                                        <input type="radio" name="diabetas" value="0" id="diabetas_no" <?php if($row->diabetas == 0) { echo "checked"; } ?>>
+                                        <input type="radio" name="diabetas" value="0" id="diabetas_no" <?php if($row->diabetas == 0 || is_null($row->diabetas)) { echo "checked"; } ?>>
                                         <label for="diabetas_no">No</label>
                                     </div>
                                 </div>
@@ -1511,7 +1538,7 @@ input[readonly].passport_logo_fr{background: #fff;}
                                         <label for="hypertension_yes">Yes</label>
                                     </div>
                                     <div class="medical-option">
-                                        <input type="radio" name="hypertension" value="0" id="hypertension_no" <?php if($row->hypertension == 0) { echo "checked"; } ?>>
+                                        <input type="radio" name="hypertension" value="0" id="hypertension_no" <?php if($row->hypertension == 0 || is_null($row->hypertension)) { echo "checked"; } ?>>
                                         <label for="hypertension_no">No</label>
                                     </div>
                                 </div>
@@ -1525,7 +1552,7 @@ input[readonly].passport_logo_fr{background: #fff;}
                                         <label for="tuberculosis_yes">Yes</label>
                                     </div>
                                     <div class="medical-option">
-                                        <input type="radio" name="tuberculosis" value="0" id="tuberculosis_no" <?php if($row->tuberculosis == 0) { echo "checked"; } ?>>
+                                        <input type="radio" name="tuberculosis" value="0" id="tuberculosis_no" <?php if($row->tuberculosis == 0 || is_null($row->tuberculosis)) { echo "checked"; } ?>>
                                         <label for="tuberculosis_no">No</label>
                                     </div>
                                 </div>
@@ -1539,7 +1566,7 @@ input[readonly].passport_logo_fr{background: #fff;}
                                         <label for="heart_disease_yes">Yes</label>
                                     </div>
                                     <div class="medical-option">
-                                        <input type="radio" name="heart_disease" value="0" id="heart_disease_no" <?php if($row->heart_disease == 0) { echo "checked"; } ?>>
+                                        <input type="radio" name="heart_disease" value="0" id="heart_disease_no" <?php if($row->heart_disease == 0 || is_null($row->heart_disease)) { echo "checked"; } ?>>
                                         <label for="heart_disease_no">No</label>
                                     </div>
                                 </div>
@@ -1553,7 +1580,7 @@ input[readonly].passport_logo_fr{background: #fff;}
                                         <label for="malaria_yes">Yes</label>
                                     </div>
                                     <div class="medical-option">
-                                        <input type="radio" name="malaria" value="0" id="malaria_no" <?php if($row->malaria == 0) { echo "checked"; } ?>>
+                                        <input type="radio" name="malaria" value="0" id="malaria_no" <?php if($row->malaria == 0 || is_null($row->malaria)) { echo "checked"; } ?>>
                                         <label for="malaria_no">No</label>
                                     </div>
                                 </div>
@@ -1567,7 +1594,7 @@ input[readonly].passport_logo_fr{background: #fff;}
                                         <label for="operation_yes">Yes</label>
                                     </div>
                                     <div class="medical-option">
-                                        <input type="radio" name="operation" value="0" id="operation_no" <?php if($row->operation == 0) { echo "checked"; } ?>>
+                                        <input type="radio" name="operation" value="0" id="operation_no" <?php if($row->operation == 0 || is_null($row->operation)) { echo "checked"; } ?>>
                                         <label for="operation_no">No</label>
                                     </div>
                                 </div>
@@ -1662,10 +1689,10 @@ input[readonly].passport_logo_fr{background: #fff;}
             </div>
 
 			</div>
-            <div class="section-header">
+            <div class="section-header work-experience-section">
                 Work Experience
             </div>
-            <div class="section-content">
+            <div class="section-content work-experience-section">
                 <div id="work_experience_container">
                     <?php 
                     $experience_row = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."maid_experience WHERE maid_id = $maidid");
@@ -1804,7 +1831,7 @@ input[readonly].passport_logo_fr{background: #fff;}
                     <input type="hidden" name="employment_history_payload" id="employment_history_payload" value="">
                 </div>
             </div>
-
+<!-- 
             <div class="section-header">
                 Language Proficiency
             </div>
@@ -1884,11 +1911,11 @@ input[readonly].passport_logo_fr{background: #fff;}
                         </tr>
                     </tbody>
                 </table>
-            </div>
-            <div class="section-header">
+            </div> -->
+            <div class="section-header work-areas-section">
                 Work Areas
             </div>
-            <div class="section-content">
+            <div class="section-content work-areas-section">
                 <table class="work-areas-table">
                     <thead>
                         <tr>
@@ -2000,7 +2027,7 @@ input[readonly].passport_logo_fr{background: #fff;}
                                         <label for="willingness_yes_<?= $area->id; ?>">Yes</label>
                                     </div>
                                     <div class="skill-radio-option">
-                                        <input type="radio" value="No" name="willingness_<?= $area->id; ?>" id="willingness_no_<?= $area->id; ?>" <?php echo (!empty($work_row) && $work_row->willing == 'No') ? "checked" : ""; ?>>
+                                        <input type="radio" value="No" name="willingness_<?= $area->id; ?>" id="willingness_no_<?= $area->id; ?>" <?php echo (empty($work_row) || $work_row->willing == 'No' || is_null($work_row->willing)) ? "checked" : ""; ?>>
                                         <label for="willingness_no_<?= $area->id; ?>">No</label>
                                     </div>
                                 </div>
@@ -2014,7 +2041,7 @@ input[readonly].passport_logo_fr{background: #fff;}
                                         <label for="experience_yes_<?= $area->id; ?>">Yes</label>
                                     </div>
                                     <div class="skill-radio-option">
-                                        <input type="radio" value="No" name="experience_<?= $area->id; ?>" id="experience_no_<?= $area->id; ?>" <?php echo (!empty($work_row) && $work_row->experience == 'No') ? "checked" : ""; ?>>
+                                        <input type="radio" value="No" name="experience_<?= $area->id; ?>" id="experience_no_<?= $area->id; ?>" <?php echo (empty($work_row) || $work_row->experience == 'No' || is_null($work_row->experience)) ? "checked" : ""; ?>>
                                         <label for="experience_no_<?= $area->id; ?>">No</label>
                                     </div>
                                 </div>
@@ -2393,7 +2420,7 @@ input[readonly].passport_logo_fr{background: #fff;}
                                         <label for="willingness_skill_yes_<?= $area->id; ?>">Yes</label>
                                     </div>
                                     <div class="skill-radio-option">
-                                        <input type="radio" value="No" name="willingness_skill_<?= $area->id; ?>" id="willingness_skill_no_<?= $area->id; ?>" <?php echo (!empty($work_row) && $work_row->willing == 'No') ? "checked" : ""; ?>>
+                                        <input type="radio" value="No" name="willingness_skill_<?= $area->id; ?>" id="willingness_skill_no_<?= $area->id; ?>" <?php echo (empty($work_row) || $work_row->willing == 'No' || is_null($work_row->willing)) ? "checked" : ""; ?>>
                                         <label for="willingness_skill_no_<?= $area->id; ?>">No</label>
                                     </div>
                                 </div>
@@ -2407,7 +2434,7 @@ input[readonly].passport_logo_fr{background: #fff;}
                                         <label for="experience_skill_yes_<?= $area->id; ?>">Yes</label>
                                     </div>
                                     <div class="skill-radio-option">
-                                        <input type="radio" value="No" name="experience_skill_<?= $area->id; ?>" id="experience_skill_no_<?= $area->id; ?>" <?php echo (!empty($work_row) && $work_row->experience == 'No') ? "checked" : ""; ?>>
+                                        <input type="radio" value="No" name="experience_skill_<?= $area->id; ?>" id="experience_skill_no_<?= $area->id; ?>" <?php echo (empty($work_row) || $work_row->experience == 'No' || is_null($work_row->experience)) ? "checked" : ""; ?>>
                                         <label for="experience_skill_no_<?= $area->id; ?>">No</label>
                                     </div>
                                 </div>
@@ -2974,7 +3001,34 @@ input[readonly].passport_logo_fr{background: #fff;}
 				}
 			});
 
+			// Children fields validation and error clearing
+			jQuery('#no_of_children, #children_age').on('input', function() {
+				// Clear error styling when user starts typing
+				jQuery('#no_of_children, #children_age').removeClass('error');
+			});
+
 			jQuery(".stchosen").chosen({no_results_text: "Oops, nothing found!"});
+		
+		// Clear error states when user makes changes
+		jQuery('.stchosen').on('change', function() {
+			var field = jQuery(this);
+			var fieldId = field.attr('id');
+			if (field.val() && field.val().trim() !== '') {
+				field.removeClass('error');
+				if (fieldId) {
+					jQuery('#' + fieldId + '_chosen').removeClass('error');
+				}
+				// Also remove from any chosen container in same form group
+				field.closest('.form-group').find('.chosen-container').removeClass('error');
+			}
+		});
+		
+		// Clear error states for regular input fields
+		jQuery('.form-input, .form-textarea').on('input change', function() {
+			if (jQuery(this).val().trim() !== '') {
+				jQuery(this).removeClass('error');
+			}
+		});
 
 			// Enforce numeric contact number length (7-14 digits) on input
 			jQuery('#contact_no').on('input', function(){
@@ -3081,18 +3135,8 @@ input[readonly].passport_logo_fr{background: #fff;}
 
 
 		jQuery("#marrital_status").change(function(){
-			if(this.value == 1)
-			{
-				jQuery('#field_no_of_children').val('');
-		    	jQuery("#field_no_of_children").css("display", "none");
-		    	jQuery('#field_children_age').val('');
-		    	jQuery("#field_children_age").css("display", "none");
-		    }
-		    else
-		    {
-		    	jQuery("#field_no_of_children").css("display", "inline");
-		    	jQuery("#field_children_age").css("display", "inline");
-		    }
+			// Children fields are now always visible regardless of marital status
+			// Users can enter 0 for number of children if they have none
 		});
 
 		// Show/hide Other Food Preferences input based on OTHERS checkbox
@@ -3170,8 +3214,136 @@ input[readonly].passport_logo_fr{background: #fff;}
 			jQuery(btn).closest('.employment-record').remove();
 		}
 
-		// Before submit, serialize Employment History into a JSON fallback payload
-		jQuery(document).on('submit', '#maidedit', function(){
+		// Validate interview requirements (language proficiency is now optional)
+		function validateLanguageAndInterview() {
+			let isValid = true;
+			let errorMessages = [];
+			
+			// Language proficiency is now optional - removed mandatory validation
+			
+			// Validate that at least one interview method is selected
+			const interviewSelected = jQuery('input[name="tc_interview[]"]:checked').length > 0;
+			if (!interviewSelected) {
+				errorMessages.push('Please select at least one interview method');
+				isValid = false;
+			}
+			
+			if (!isValid) {
+				alert('Please complete the following:\n• ' + errorMessages.join('\n• '));
+			}
+			
+			return isValid;
+		}
+
+		// Custom validation for form submission
+		jQuery(document).on('submit', '#maidedit', function(e){
+			console.log('Form submission started - Edit Form');
+			
+			// First validate language and interview requirements
+			if (!validateLanguageAndInterview()) {
+				e.preventDefault();
+				return false;
+			}
+			
+			// Validate all required fields (both HTML5 required and data-required)
+			var hasErrors = false;
+			var errorFields = [];
+			
+			// Check HTML5 required fields
+			jQuery('#maidedit [required]').each(function() {
+				var field = jQuery(this);
+				var value = field.val();
+				
+				if (!value || value.trim() === '') {
+					var label = field.closest('.form-group').find('label').first().text().replace('*', '').trim();
+					if (!label) {
+						label = field.attr('placeholder') || field.attr('name') || 'Field';
+					}
+					errorFields.push(label);
+					field.addClass('error');
+					hasErrors = true;
+				}
+			});
+			
+			// Check data-required fields (like chosen dropdowns)
+			jQuery('#maidedit [data-required="true"]').each(function() {
+				var field = jQuery(this);
+				var value = field.val();
+				var fieldId = field.attr('id');
+				
+				if (!value || value.trim() === '') {
+					var label = field.closest('.form-group').find('label').first().text().replace('*', '').trim();
+					if (!label) {
+						label = field.attr('placeholder') || field.attr('name') || 'Field';
+					}
+					errorFields.push(label);
+					field.addClass('error');
+					
+					// For chosen dropdowns, add error class to chosen container
+					if (fieldId && field.hasClass('stchosen')) {
+						var chosenContainer = jQuery('#' + fieldId + '_chosen');
+						if (chosenContainer.length > 0) {
+							chosenContainer.addClass('error');
+						} else {
+							// Fallback: find chosen container in same form group
+							field.closest('.form-group').find('.chosen-container').addClass('error');
+						}
+					}
+					
+					hasErrors = true;
+				}
+			});
+			
+			// Validate children fields consistency
+			var numChildren = jQuery('#no_of_children').val();
+			var childrenAges = jQuery('#children_age').val();
+			
+			// Clear any existing error states for children fields
+			jQuery('#no_of_children, #children_age').removeClass('error');
+			
+			// If number of children is greater than 0, validate ages are provided
+			if (numChildren && parseInt(numChildren) > 0) {
+				if (!childrenAges || childrenAges.trim() === '') {
+					jQuery('#children_age').addClass('error');
+					errorFields.push('Age(s) of Children (required when number of children > 0)');
+					hasErrors = true;
+				} else {
+					// Validate that the number of ages roughly matches number of children
+					var agesList = childrenAges.split(',').filter(function(age) { return age.trim() !== ''; });
+					if (agesList.length !== parseInt(numChildren)) {
+						jQuery('#children_age').addClass('error');
+						errorFields.push('Age(s) of Children (provide ' + numChildren + ' age(s) separated by commas)');
+						hasErrors = true;
+					}
+				}
+			}
+			
+			// If ages are provided but number of children is 0 or empty
+			if (childrenAges && childrenAges.trim() !== '') {
+				if (!numChildren || parseInt(numChildren) === 0) {
+					jQuery('#no_of_children').addClass('error');
+					errorFields.push('Number of Children (required when ages are provided)');
+					hasErrors = true;
+				}
+			}
+			
+			// If validation fails, prevent submission and show error
+			if (hasErrors) {
+				e.preventDefault();
+				var errorMsg = 'Please fill in the following required fields:\n• ' + errorFields.join('\n• ');
+				alert(errorMsg);
+				
+				// Focus on first error (prefer chosen dropdown over hidden select)
+				var firstErrorField = jQuery('#maidedit .error').first();
+				if (firstErrorField.hasClass('stchosen')) {
+					var fieldId = firstErrorField.attr('id');
+					jQuery('#' + fieldId + '_chosen .chosen-single').focus();
+				} else {
+					firstErrorField.focus();
+				}
+				
+				return false;
+			}
 			var data = [];
 			jQuery('#employment_history_container .employment-record').each(function(){
 				var $rec = jQuery(this);
